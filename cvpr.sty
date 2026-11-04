@@ -1,0 +1,151 @@
+% ---------------------------------------------------------------
+% CVPR 2027 Style File (cvpr.sty)
+% Compatible with IEEE/CVF CVPR 2026/2027 Author Kit (Overleaf & TeX Live)
+% Supports options: [review], [pagenumbers], and default camera-ready
+% ---------------------------------------------------------------
+\NeedsTeXFormat{LaTeX2e}[1999/12/01]
+\ProvidesPackage{cvpr}[2027/03/01 CVPR 2027 Conference Style]
+
+\RequirePackage{times}
+\RequirePackage{mathptmx}
+\RequirePackage{xspace}
+\RequirePackage{xcolor}
+\RequirePackage{lineno}
+
+\newif\ifcvprfinal
+\cvprfinalfalse
+\newif\ifcvprpagenumbers
+\cvprpagenumbersfalse
+
+\DeclareOption{review}{\cvprfinalfalse\cvprpagenumberstrue}
+\DeclareOption{pagenumbers}{\cvprfinaltrue\cvprpagenumberstrue}
+\DeclareOption{final}{\cvprfinaltrue\cvprpagenumbersfalse}
+\cvprfinaltrue
+\ProcessOptions\relax
+
+\def\paperID{*****}
+\def\confName{CVPR}
+\def\confYear{2027}
+
+% Standard IEEE/CVF US Letter Two-Column Page Geometry
+\setlength{\textheight}{8.875in}
+\setlength{\textwidth}{6.875in}
+\setlength{\columnsep}{0.3125in}
+\setlength{\topmargin}{0in}
+\setlength{\headheight}{0in}
+\setlength{\headsep}{0in}
+\setlength{\parindent}{1pc}
+\setlength{\oddsidemargin}{-.304in}
+\setlength{\evensidemargin}{-.304in}
+
+% Section and Subsection Typography (IEEE/CVF Standard)
+\def\@normalsize{\@setsize\normalsize{11pt}\xpt\@xpt
+\abovedisplayskip 6pt plus2pt minus3pt
+\belowdisplayskip \abovedisplayskip
+\abovedisplayshortskip 0pt plus2pt
+\belowdisplayshortskip 3pt plus2pt minus2pt}
+
+\def\small{\@setsize\small{10pt}\ixpt\@ixpt}
+\def\footnotesize{\@setsize\footnotesize{9pt}\viiipt\@viiipt}
+\def\scriptsize{\@setsize\scriptsize{8pt}\viipt\@viipt}
+\def\tiny{\@setsize\tiny{7pt}\vipt\@vipt}
+\def\large{\@setsize\large{12pt}\xipt\@xipt}
+\def\Large{\@setsize\Large{14pt}\xiipt\@xiipt}
+\def\LARGE{\@setsize\LARGE{16pt}\xivpt\@xivpt}
+
+\def\section{\@startsection {section}{1}{\z@}
+   {-7pt plus -2pt minus -2pt}{4pt plus 1pt}{\large\bf}}
+\def\subsection{\@startsection {subsection}{2}{\z@}
+   {-5pt plus -1pt minus -1pt}{3pt plus 1pt}{\normalsize\bf}}
+\def\subsubsection{\@startsection {subsubsection}{3}{\z@}
+   {-6pt plus -2pt minus -2pt}{3pt plus 1pt}{\normalsize\bf}}
+
+% Title and Abstract Formatting
+\def\maketitle{\par
+ \begingroup
+   \def\thefootnote{\fnsymbol{footnote}}
+   \twocolumn[\@maketitle]
+   \@thanks
+ \endgroup
+ \setcounter{footnote}{0}
+ \let\maketitle\relax
+ \let\@maketitle\relax
+}
+
+\def\@maketitle{
+ \newpage
+ \null
+ \vskip .25in
+ \begin{center}
+  {\Large \bf \@title \par}
+  \vskip 14pt
+  \ifcvprfinal
+    {\large
+     \lineskip .5em
+     \begin{tabular}[t]{c}
+      \@author
+     \end{tabular}\par}
+  \else
+    {\large \bf Anonymous \confName~\confYear\ Submission\par}
+    \vskip 4pt
+    {\normalsize Paper ID \paperID\par}
+  \fi
+  \vskip 14pt
+ \end{center}
+}
+
+\renewenvironment{abstract}{
+ \centerline{\large\bf Abstract}
+ \vspace*{6pt}
+ \itshape
+}{
+ \par\vspace{8pt}
+}
+
+% Review Line Numbers & Page Headers
+\ifcvprfinal
+  \ifcvprpagenumbers
+    \pagestyle{plain}
+  \else
+    \pagestyle{empty}
+  \fi
+\else
+  \pagestyle{plain}
+  \linenumbers
+  \renewcommand\linenumberfont{\normalfont\tiny\sffamily\color{gray}}
+\fi
+
+% Standard CVPR Abbreviations
+\makeatletter
+\DeclareRobustCommand\onedot{\futurelet\@let@token\@onedot}
+\def\@onedot{\ifx\@let@token.\else.\null\fi\xspace}
+\def\eg{\emph{e.g}\onedot} \def\Eg{\emph{E.g}\onedot}
+\def\ie{\emph{i.e}\onedot} \def\Ie{\emph{I.e}\onedot}
+\def\cf{\emph{cf}\onedot} \def\Cf{\emph{Cf}\onedot}
+\def\etc{\emph{etc}\onedot} \def\vs{\emph{vs}\onedot}
+\def\wrt{w.r.t\onedot} \def\dof{d.o.f\onedot}
+\def\iid{i.i.d\onedot} \def\wolog{w.l.o.g\onedot}
+\def\etal{\emph{et al}\onedot}
+\makeatother
+
+% Supplementary Title Macro
+\makeatletter
+\newcommand{\maketitlesupplementary}{
+   \newpage
+   \twocolumn[
+    \begin{center}
+     {\Large \bf \@title}\\
+     \vspace*{0.30cm}
+     {\large \bf Supplementary Material}\\
+     \vspace*{0.20cm}
+     \ifcvprfinal
+     \else
+       {\normalsize Anonymous \confName~\confYear\ Submission --- Paper ID \paperID}
+     \fi
+     \vspace*{0.40cm}
+    \end{center}
+   ]
+}
+\makeatother
+
+\endinput

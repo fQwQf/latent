@@ -1,0 +1,64 @@
+% ---------------------------------------------------------------
+% Preamble packages and custom macros for CVPR 2027 submission
+% ---------------------------------------------------------------
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{mathtools}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{microtype}
+\usepackage[numbers,sort&compress]{natbib}
+
+% Caption and float spacing matched to official CVPR density
+\captionsetup[table]{position=above, skip=3pt, font=small}
+\captionsetup[figure]{position=below, skip=3pt, font=small}
+\setlength{\textfloatsep}{7pt plus 2pt minus 2pt}
+\setlength{\floatsep}{5pt plus 2pt minus 2pt}
+\setlength{\intextsep}{5pt plus 2pt minus 2pt}
+\setlength{\dbltextfloatsep}{8pt plus 2pt minus 2pt}
+\setlength{\dblfloatsep}{6pt plus 2pt minus 2pt}
+
+% Compact list spacing without enumitem dependency
+\makeatletter
+\def\@listi{\leftmargin\leftmargini
+            \parsep 0pt
+            \topsep 2pt plus 1pt minus 1pt
+            \itemsep 1pt plus 1pt minus 0.5pt}
+\let\@listI\@listi
+\@listi
+\makeatother
+
+% Theorem and Proposition environments with compact spacing
+\newtheoremstyle{cvprplain}{3.5pt}{3.5pt}{\itshape}{}{\bfseries}{.}{0.4em}{}
+\newtheoremstyle{cvprdef}{3.5pt}{3.5pt}{\normalfont}{}{\bfseries}{.}{0.4em}{}
+\theoremstyle{cvprplain}
+\newtheorem{proposition}{Proposition}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{corollary}{Corollary}
+\theoremstyle{cvprdef}
+\newtheorem{definition}{Definition}
+\newtheorem{remark}{Remark}
+
+% Custom column types for compact two-column tables
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\arraybackslash}p{#1}}
+
+% Convenient math macros
+\newcommand{\VT}{V_T}
+\newcommand{\Vorig}{V_{\mathrm{orig}}}
+\newcommand{\Vrel}{V_{\mathrm{rel}}}
+\newcommand{\Virrel}{V_{\mathrm{irrel}}}
+\newcommand{\Vrand}{V_{\mathrm{rand}}}
+\newcommand{\Mbdy}{M_{\mathrm{bdy}}}
+\newcommand{\Mstart}{M_{\mathrm{start}}}
+\newcommand{\Mend}{M_{\mathrm{end}}}
+\newcommand{\KV}{\mathrm{KV}}
+\newcommand{\Do}{\mathrm{do}}
+\newcommand{\ci}[2]{\,\text{\scriptsize $[#1,#2]$}}

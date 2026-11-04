@@ -1,0 +1,397 @@
+\clearpage
+\setcounter{page}{1}
+\maketitlesupplementary
+\appendix
+
+\renewcommand{\thetable}{S\arabic{table}}
+\renewcommand{\thefigure}{S\arabic{figure}}
+\setcounter{table}{0}
+\setcounter{figure}{0}
+
+\section{Extended Theoretical Proofs and Methodological Details}
+\label{app:proofs}
+
+\subsection{Detailed Proof of Proposition 1 (Boundary-Crossing, Subset Inclusion, and Multi-Step Telescoping)}
+
+\begin{proof}[Proof of Proposition~\ref{prop:margin}]
+\textbf{(1) Telescoping Margin Identity and Single-Step Boundary Crossing.}
+For any fixed instance $(\VT, Q)$ and step $k \in \{1, \dots, K\}$ (conditioned on the gold prefix $Y^*_{<k}$ under the chain-rule decomposition of full-chain accuracy, or under free generation with prefix $\hat{Y}_{<k}(m,h)$), adding and subtracting $M_k(\Mbdy, 0)$ yields the exact algebraic identity:
+\begin{align}
+  M_k(\Mbdy, H) &= M_k(\varnothing, \varnothing) + \big[M_k(\Mbdy, 0) - M_k(\varnothing, \varnothing)\big] \nonumber \\
+  &\quad + \big[M_k(\Mbdy, H) - M_k(\Mbdy, 0)\big] \nonumber \\
+  &\equiv M_k(\varnothing, \varnothing) + \Delta M_k^{\mathrm{bdy}} + \Delta M_k^{\mathrm{slot}}(H).
+\end{align}
+Let $A \coloneqq M_k(\Mbdy, 0)$ and $B \coloneqq \Delta M_k^{\mathrm{slot}}(H)$, so that $C_k^{(0)} = \mathbb{I}\{A > 0\}$ and $C_k^{(H)} = \mathbb{I}\{A + B > 0\}$. For any two real-valued random variables $A, B$, the difference of indicator functions satisfies the pointwise identity:
+\begin{equation}
+  \begin{aligned}\mathbb{I}\{A > 0\} - \mathbb{I}\{A + B > 0\} &\equiv \mathbb{I}\{A > 0 \ge A + B\} \\ &- \mathbb{I}\{A \le 0 < A + B\}.\end{aligned}
+\end{equation}
+Rewriting $\{A > 0 \ge A + B\} = \{0 < A \le -B\}$ and $\{A \le 0 < A + B\} = \{0 \le -A < B\}$ and taking expectations over the evaluation distribution yields:
+\begin{equation}
+  \mathbb{P}(C_k^{(0)} = 1) - \mathbb{P}(C_k^{(H)} = 1) = \pi_k^- - \pi_k^+,
+\end{equation}
+where $\pi_k^- = \mathbb{P}(0 < M_k(\Mbdy, 0) \le -\Delta M_k^{\mathrm{slot}}(H))$ and $\pi_k^+ = \mathbb{P}(0 \le -M_k(\Mbdy, 0) < \Delta M_k^{\mathrm{slot}}(H))$.
+
+\textbf{(2) Conditional Subset Inclusion Law.}
+Consider the pre-filtered subset conditioned on the event $\{C_k^{(H)} = 1\} = \{M_k(\Mbdy, 0) + \Delta M_k^{\mathrm{slot}}(H) > 0\}$. Intersecting with $\{\Delta M_k^{\mathrm{slot}}(H) \le 0\}$ gives:
+\begin{equation}
+  M_k(\Mbdy, 0) > -\Delta M_k^{\mathrm{slot}}(H) \ge 0 \implies C_k^{(0)} = 1.
+\end{equation}
+Hence $\{C_k^{(H)} = 1\} \cap \{\Delta M_k^{\mathrm{slot}}(H) \le 0\} \subseteq \{C_k^{(0)} = 1\}$, which immediately establishes $\mathbb{P}(C_k^{(0)} = 1 \mid C_k^{(H)} = 1, \Delta M_k^{\mathrm{slot}}(H) \le 0) \equiv 1$.
+
+\textbf{(3) Multi-Step Product Telescoping and Fr\'echet Bounds.}
+For any two sequences of real numbers $(a_1, \dots, a_K)$ and $(b_1, \dots, b_K)$, expanding the telescoping sum on the right-hand side of:
+\begin{equation}
+  \prod_{k=1}^K a_k - \prod_{k=1}^K b_k \equiv \sum_{k=1}^K \left(\prod_{j=1}^{k-1} a_j\right) (a_k - b_k) \left(\prod_{m=k+1}^K b_m\right)
+\end{equation}
+shows that all interior terms cancel pairwise, leaving $\prod_{k=1}^K a_k - \prod_{k=1}^K b_k$. Substituting $a_k = C_k^{(0)} \in \{0, 1\}$ and $b_k = C_k^{(H)} \in \{0, 1\}$ and taking expectations yields Eq.~\eqref{eq:multistep_telescope} without any independence assumption. Finally, for the failure events $E_k = \{C_k = 0\}$ with $\mathbb{P}(E_k) = e_k$, basic measure monotonicity $\mathbb{P}(E_k) \le \mathbb{P}(\bigcup_{k=1}^K E_k)$ and Boole's union bound $\mathbb{P}(\bigcup_{k=1}^K E_k) \le \sum_{k=1}^K \mathbb{P}(E_k)$ yield the Fr\'echet bounds $\max_{1 \le k \le K} e_k \le 1 - \mathrm{Acc}_{\mathrm{joint}}(K) \le \min(1, \sum_{k=1}^K e_k)$.
+\end{proof}
+
+\subsection{Detailed Proof of Proposition 2 (Ruling Out Nonlinear AND-Gate Synergy via \texttt{Zero-Patch})}
+
+\begin{proof}[Proof of Proposition~\ref{prop:bypass}]
+In a causal Transformer with layer index $\ell \in \{1, \dots, D\}$ operating on $\mathrm{Seq} = [\VT, Q, \Mstart, H_{1:L}, \Mend, Y]$, causal self-attention at layer $\ell = 1$ computes the hidden state at each prompt/marker position $i \in Q \cup \{\Mstart\}$ as:
+\begin{equation}
+  h_i^{(1)} = h_i^{(0)} + \sum_{j \in \VT} \alpha_{i,j}^{(1)} W_V^{(1)} h_j^{(0)} + \sum_{j' \le i,\, j' \notin \VT} \alpha_{i,j'}^{(1)} W_V^{(1)} h_{j'}^{(0)}.
+\end{equation}
+Because the attention weights $\alpha_{i,j}^{(1)} > 0$ for $j \in \VT$ are unmasked during prefill, $h_i^{(1)}$ is a function of $\VT$, and by induction across layers $\ell = 2, \dots, D$, the key-value projections $\KV_{Q,M}^{(\ell)} = (W_K^{(\ell)} h_{Q,M}^{(\ell-1)}, W_V^{(\ell)} h_{Q,M}^{(\ell-1)})$ depend on $(\VT, Q)$.
+
+When decoding-time vision masking is applied ($m_{\mathrm{vis}} = 0$), answer decoding is governed by $Y_{\mathrm{mask}} = g_\theta(0, \KV_{Q,M}(\VT, Q), \KV_H(H_{1:L}))$. Suppose a skeptic hypothesizes that $g_\theta$ implements a nonlinear conjunctive interaction (e.g., an AND-gate where both $\KV_{Q,M}$ and $\KV_H$ must agree on the new color $a_m'$ to flip the output, which could produce $\tau_{\mathrm{lat}}(0) = 0$ under single-argument replacement). Consider the \texttt{Zero-Patch} intervention $\Do(H_{1:L} \leftarrow 0)$, which fixes the third argument of $g_\theta$ to the image-independent constant $\KV_H(0)$. This defines the reduced single-source function:
+\begin{equation}
+  \tilde{g}_\theta(\VT, Q) \coloneqq g_\theta\big(0,\; \KV_{Q,M}(\VT, Q),\; \KV_H(0)\big).
+\end{equation}
+Because $\KV_H(0)$ is constant with respect to $\VT$, any variation in $\tilde{g}_\theta(\VT, Q)$ across distinct evaluation images $\VT$ enters exclusively through the second argument $\KV_{Q,M}(\VT, Q)$. Therefore, observing $\Delta_{\mathrm{zero}}(0) \le 0$ alongside high masked accuracy $\mathbb{P}(\tilde{g}_\theta(\VT, Q) = Y^*(\VT)) \ge 67.33\%$ proves that $\KV_{Q,M}(\VT, Q)$ alone suffices to drive the full observed visual accuracy under $m_{\mathrm{vis}} = 0$, while observing $\tau_{\mathrm{relay}}(0) = 96.88\%$--$100.00\%$ and $\tau_{\mathrm{lat}}(0) = 0.00\%$ confirms that $g_\theta$ routes counterfactual visual changes exclusively through $\KV_{Q,M}$.
+\end{proof}
+
+\section{Pilot Study and Single-Turn Counterfactual Tables (\texttt{Pilot}, \texttt{E2-A}, \texttt{E3-A})}
+\label{app:pilot_e2_e3a}
+
+\begin{table*}[t]
+  \caption{\textbf{Pilot Study: Reproduction and Basic Interventions on Public Single-Hop Benchmarks ($991$ Samples).} Accuracy ($\%$) of base \texttt{Qwen2.5-VL-7B-Instruct} and \texttt{LVR-7B} across latent steps $L \in \{0, 4, 8, 16\}$, slot zeroing ($H \leftarrow 0$), norm-matched Gaussian noise ($H \leftarrow \varepsilon$), and decoding-time vision masking (\texttt{Vision-Mask}).}
+  \label{tab:s1_pilot}
+  \centering
+  \small
+  \resizebox{\textwidth}{!}{%
+\begin{tabular}{l r c c c c c c c c}
+    \toprule
+    \textbf{Benchmark} & $\mathbf{N}$ & \textbf{Qwen-Direct} & \textbf{LVR-$L0_{\mathrm{off}}$} & \textbf{LVR-$L4$} & \textbf{LVR-$L8$} & \textbf{LVR-$L16$} & \textbf{Zero ($H{\leftarrow}0$)} & \textbf{Noise ($H{\leftarrow}\varepsilon$)} & \textbf{Vision-Mask} \\
+    \midrule
+    TreeBench~\cite{treebench2025}   & $400$ & $\mathbf{38.00}$ & $29.30$ & $30.08$ & $30.47$ & $30.08$ & $30.47$ & $30.08$ & $25.39$ \\
+    HR-Bench 4K~\cite{wang2024hrbench} & $200$ & $\mathbf{66.50}$ & $52.00$ & $50.00$ & $50.00$ & $49.50$ & $50.00$ & $50.50$ & $30.00$ \\
+    HR-Bench 8K~\cite{wang2024hrbench} & $200$ & $\mathbf{62.50}$ & $57.00$ & $57.00$ & $57.00$ & $56.50$ & $57.00$ & $56.00$ & $27.00$ \\
+    V*Bench~\cite{wu2024vstar}       & $191$ & $\mathbf{78.53}$ & $77.49$ & $77.49$ & $77.49$ & $77.49$ & $77.49$ & $77.49$ & $35.60$ \\
+    \midrule
+    \textbf{Weighted Mean} & $\mathbf{991}$ & $\mathbf{56.51}$ & $48.76$ & $48.66$ & $48.81$ & $48.51$ & $48.81$ & $48.56$ & $\mathbf{28.61}$ \\
+    \bottomrule
+  \end{tabular}%
+  }
+\end{table*}
+
+\begin{table*}[t]
+  \caption{\textbf{\texttt{E2-A}: Single-Turn Counterfactual Input Sensitivity and Latent Shift Magnitude ($3,192$ Runs across $87$ Image Pairs).} On single-turn independent queries (free of multi-turn history anchoring), recoloring the target object ($\Vrel$) induces $61.90\%$--$72.09\%$ target answer flips and substantial Euclidean shifts $\|\Delta H\|_2$ in the latent trajectory, whereas distractor recoloring ($\Virrel$) induces $0.00\%$ false flips.}
+  \label{tab:s2_e2a}
+  \centering
+  \small
+  \resizebox{\textwidth}{!}{%
+\begin{tabular}{l c c c c c}
+    \toprule
+    \textbf{Condition / Model} & \textbf{$\Vrel$ Target Flip Rate (\%)} & \textbf{$\Virrel$ False Flip Rate (\%)} & \textbf{Mean $\|\Delta H(\Vrel)\|_2$} & \textbf{Mean Cosine Sim.} & \textbf{Effective Rank (90\% Var.)} \\
+    \midrule
+    $K=2$, \texttt{LVR-L4}  & $61.90$ & $0.00$ & $42.34$ & $0.884$ & $3.2$ \\
+    $K=2$, \texttt{LVR-L8}  & $64.29$ & $0.00$ & $68.12$ & $0.861$ & $4.1$ \\
+    $K=2$, \texttt{LVR-L16} & $64.29$ & $0.00$ & $95.40$ & $0.849$ & $4.8$ \\
+    $K=4$, \texttt{LVR-L4}  & $69.77$ & $0.00$ & $44.18$ & $0.879$ & $3.4$ \\
+    $K=4$, \texttt{LVR-L8}  & $72.09$ & $0.00$ & $68.30$ & $0.858$ & $4.3$ \\
+    $K=4$, \texttt{LVR-L16} & $70.93$ & $0.00$ & $97.16$ & $0.842$ & $5.0$ \\
+    \midrule
+    \textbf{Overall Mean}   & $\mathbf{67.21}$ & $\mathbf{0.00}$ & $\mathbf{69.25}$ & $0.862$ & $4.1$ \\
+    \bottomrule
+  \end{tabular}%
+  }
+\end{table*}
+
+\begin{table*}[t]
+  \caption{\textbf{\texttt{E3-A} \& \texttt{E3-C3}: Pre-Adaptation Donor Latent Patching ($15,484$ Runs) and $K=4$ Per-Position Accuracy Breakdown.} Top: across all $384$ doubly eligible donor injections, target color flip rate (\texttt{FlipToDonor}) is strictly $0.00\%$. Bottom: complete per-position mean accuracy and linear position slope from \texttt{E3-C} Table~C3.}
+  \label{tab:s3_e3a_c3}
+  \centering
+  \small
+  \resizebox{\textwidth}{!}{%
+\begin{tabular}{l c c c c c c}
+    \toprule
+    \textbf{Part A: \texttt{E3-A} Intervention Arm (Doubly Eligible Subset)} & \textbf{Donor-All} & \textbf{WinEarly} & \textbf{WinLate} & \textbf{NormMatched} & \textbf{Zero-Patch} & \textbf{DevMean-Patch} \\
+    \midrule
+    \texttt{FlipToDonor} ($a_m \to a_m'$, $\%$, $n=384$ Pooled Injections) & $\mathbf{0.00}$ & $\mathbf{0.00}$ & $\mathbf{0.00}$ & $\mathbf{0.00}$ & $0.00$ & $0.00$ \\
+    \texttt{StayOrig} ($a_m \to a_m$, Retention Rate $\%$) & $97.67\text{--}100.0$ & $98.84\text{--}100.0$ & $97.67\text{--}100.0$ & $97.67\text{--}100.0$ & $95.35\text{--}98.86$ & $96.51\text{--}100.0$ \\
+    \bottomrule
+  \end{tabular}%
+  }
+  \vspace{4pt}
+
+  \resizebox{\textwidth}{!}{%
+\begin{tabular}{l c c c c}
+    \toprule
+    \textbf{Part B: \texttt{E3-C} Table C3 ($K=4$ Per-Position)} & \textbf{Indep.\ Pos.\ Mean (\%)} & \textbf{Serial Pos.\ Mean (\%)} & \textbf{Indep.\ Slope (pp/step)} & \textbf{Serial Slope (pp/step)} \\
+    \midrule
+    \texttt{NoLatent}      & $68.67\ci{64.42}{72.75}$ & $71.50\ci{67.33}{75.42}$ & $-6.53\ci{-9.37}{-3.63}$ & $-5.33\ci{-8.27}{-2.50}$ \\
+    \texttt{Marker-only}   & $68.58\ci{64.42}{72.75}$ & $70.42\ci{66.08}{74.42}$ & $-6.03\ci{-8.97}{-3.17}$ & $-4.77\ci{-7.73}{-1.83}$ \\
+    \texttt{Native} $L=4$  & $58.58\ci{54.50}{62.67}$ & $61.33\ci{57.42}{65.33}$ & $-3.83\ci{-6.87}{-0.83}$ & $-2.07\ci{-5.13}{1.03}$ \\
+    \texttt{Native} $L=8$  & $61.00\ci{57.00}{64.92}$ & $63.92\ci{59.67}{67.83}$ & $-2.80\ci{-5.90}{0.23}$ & $-1.10\ci{-4.03}{1.83}$ \\
+    \texttt{Zero-Slot} $L=4$ & $\mathbf{68.83}\ci{64.67}{73.00}$ & $\mathbf{72.08}\ci{67.83}{76.08}$ & $-7.00\ci{-9.93}{-4.17}$ & $-5.77\ci{-8.67}{-2.97}$ \\
+    \texttt{Zero-Slot} $L=8$ & $68.67\ci{64.42}{72.92}$ & $72.00\ci{67.83}{76.08}$ & $-7.53\ci{-10.23}{-4.87}$ & $-6.93\ci{-9.57}{-4.23}$ \\
+    \texttt{Zero-Marker} $L=4$ & $59.00\ci{54.75}{63.08}$ & $61.83\ci{57.83}{65.84}$ & $-3.87\ci{-7.10}{-0.70}$ & $-2.27\ci{-5.37}{0.80}$ \\
+    \texttt{Zero-Marker} $L=8$ & $61.92\ci{57.83}{65.83}$ & $65.00\ci{61.00}{69.00}$ & $-3.37\ci{-6.50}{-0.27}$ & $-0.73\ci{-3.80}{2.30}$ \\
+    \bottomrule
+  \end{tabular}%
+  }
+\end{table*}
+
+\section{Complete \texttt{E3-B} Positive Control and 8-Point Logit Interpolation Tables}
+\label{app:e3b_tables}
+
+\begin{table*}[t]
+  \caption{\textbf{\texttt{E3-B1} Full Tables B0, B1a, B1b, B1c: Local Visual Token Replacement vs.\ Local ROI-Masked Latent Injection ($2,394$ \texttt{B1} Runs).} Directional net transfer (pp, with $95\%$ cluster bootstrap intervals) at the edited position and across the full answer chain for all three analysis populations.}
+  \label{tab:s4_e3b1}
+  \centering
+  \footnotesize
+  \setlength{\tabcolsep}{3.5pt}
+  \resizebox{\textwidth}{!}{%
+\begin{tabular}{l c c c c c c}
+    \toprule
+    & \textbf{Coverage} & \multicolumn{2}{c}{\textbf{Full Set Net Transfer (pp)}} & \multicolumn{2}{c}{\textbf{Position-Eligible Subset (pp)}} & \textbf{Chain-Eligible (pp)} \\
+    \cmidrule(lr){3-4} \cmidrule(lr){5-6}
+    \textbf{Cond.} & \textbf{(Full / Pos / Chain)} & \textbf{Vis.\ Swap (Pos / Chain)} & \textbf{ROI Mask (Pos / Chain)} & \textbf{Vis.\ Swap (Pos / Chain)} & \textbf{ROI Mask (Pos / Chain)} & \textbf{Vis.\ Swap / ROI Mask} \\
+    \midrule
+    $K{=}2, L{=}4$  & $41{:}92 / 28{:}53 / 24{:}43$ & $48.78 / 44.51$ & $-1.22\ci{-7.32}{3.66} / \phantom{+}0.00$ & $\mathbf{83.93} / 75.89$ & $\phantom{+}0.00\ci{-7.14}{7.14} / \phantom{+}0.00$ & $\mathbf{85.42} / +2.08\ci{-8.33}{14.58}$ \\
+    $K{=}2, L{=}8$  & $41{:}92 / 27{:}52 / 23{:}41$ & $50.00 / 44.51$ & $-2.44\ci{-9.76}{4.88} / \phantom{+}0.00$ & $\mathbf{87.04} / 78.70$ & $\phantom{+}0.00\ci{-7.41}{9.26} / \phantom{+}0.00$ & $\mathbf{91.30} / \phantom{+}0.00\ci{-8.70}{10.87}$ \\
+    $K{=}2, L{=}16$ & $41{:}92 / 28{:}55 / 24{:}46$ & $53.66 / 48.78$ & $-2.44\ci{-8.54}{2.44} / \phantom{+}0.00$ & $\mathbf{93.45} / 82.74$ & $\phantom{+}0.00\ci{-5.36}{5.36} / \phantom{+}0.00$ & $\mathbf{93.75} / \phantom{+}0.00\ci{-6.25}{6.25}$ \\
+    $K{=}4, L{=}4$  & $64{:}174 / 39{:}71 / 18{:}27$ & $42.71 / 25.65$ & $+0.52\ci{-0.78}{2.34} / \phantom{+}0.00$ & $\mathbf{87.61} / 53.21$ & $+2.56\ci{0.00}{7.69} / \phantom{+}0.00$ & $\mathbf{89.81} / \phantom{+}0.00\ci{0.00}{0.00}$ \\
+    $K{=}4, L{=}8$  & $64{:}174 / 41{:}83 / 19{:}31$ & $46.74 / 25.52$ & $-0.65\ci{-1.69}{0.00} / {-0.65}$ & $\mathbf{90.45} / 50.00$ & $-0.81\ci{-2.44}{0.00} / {-0.81}$ & $\mathbf{91.93} / \phantom{+}0.00\ci{0.00}{0.00}$ \\
+    $K{=}4, L{=}16$ & $64{:}174 / 39{:}88 / 20{:}42$ & $49.35 / 30.47$ & $-0.78\ci{-2.34}{0.00} / \phantom{+}0.00$ & $\mathbf{85.47} / 56.24$ & $-1.28\ci{-3.85}{0.00} / {-1.28}$ & $\mathbf{86.67} / \phantom{+}0.00\ci{0.00}{0.00}$ \\
+    \bottomrule
+  \end{tabular}%
+  }
+\end{table*}
+
+\begin{table*}[t]
+  \caption{\textbf{\texttt{E3-B2} Full Tables B2a \& B2b: 8-Point Continuous Linear Interpolation $H(\alpha) = (1-\alpha)H(\Vorig) + \alpha H(\Vrel)$ on Native \texttt{LVR-7B} ($12,768$ Runs).} Relative log-odds shift $\delta M(\alpha) = M(\alpha) - M(0)$ across $\alpha \in [0, 0.2, 0.4, 0.6, 0.8, 1.0, 1.5, 2.0]$ under Unmasked (U) and Vision-Masked (V) decoding.}
+  \label{tab:s5_e3b2}
+  \centering
+  \scriptsize
+  \setlength{\tabcolsep}{2.8pt}
+  \resizebox{\textwidth}{!}{%
+\begin{tabular}{l c c l l}
+    \toprule
+    \textbf{Subset / Cond.} & \textbf{$\delta M(1)$ U / V (95\% CI)} & \textbf{$\delta M(2)$ U / V (95\% CI)} & \textbf{Unmasked $M(0)$ \& 8-Point $\delta M(\alpha)$ Curve} & \textbf{Vision-Masked $M(0)$ \& 8-Point $\delta M(\alpha)$ Curve} \\
+    \midrule
+    Full $K{=}2, L{=}4$  & $-0.068\ci{-0.17}{0.02} / {-0.070}\ci{-0.17}{0.02}$ & $-0.094 / {-0.083}$ & $M_0{=}{-1.59}$: $[0, -.006, -.021, -.045, -.056, -.068, -.088, -.094]$ & $M_0{=}{-1.38}$: $[0, -.018, -.032, -.043, -.059, -.070, -.087, -.083]$ \\
+    Full $K{=}2, L{=}8$  & $-0.092\ci{-0.21}{0.02} / {-0.072}\ci{-0.18}{0.03}$ & $-0.133 / {-0.112}$ & $M_0{=}{-1.54}$: $[0, -.023, -.041, -.056, -.074, -.092, -.118, -.133]$ & $M_0{=}{-1.30}$: $[0, -.020, -.033, -.048, -.066, -.072, -.091, -.112]$ \\
+    Full $K{=}2, L{=}16$ & $-0.095\ci{-0.21}{0.01} / {-0.060}\ci{-0.16}{0.04}$ & $-0.125 / {-0.090}$ & $M_0{=}{-1.63}$: $[0, -.018, -.033, -.060, -.077, -.095, -.120, -.125]$ & $M_0{=}{-1.36}$: $[0, -.008, -.023, -.041, -.053, -.060, -.086, -.090]$ \\
+    Full $K{=}4, L{=}4$  & $-0.016\ci{-0.03}{-0.00} / {-0.012}\ci{-0.03}{0.01}$ & $-0.024 / {-0.010}$ & $M_0{=}{-1.12}$: $[0, -.005, -.005, -.010, -.013, -.016, -.022, -.024]$ & $M_0{=}{-0.63}$: $[0, -.002, -.001, -.004, -.007, -.012, -.011, -.010]$ \\
+    Full $K{=}4, L{=}8$  & $-0.015\ci{-0.05}{0.01} / {-0.011}\ci{-0.04}{0.01}$ & $-0.026 / {-0.013}$ & $M_0{=}{-1.12}$: $[0, +.004, -.003, -.008, -.010, -.015, -.026, -.026]$ & $M_0{=}{-0.60}$: $[0, +.001, -.000, -.004, -.005, -.011, -.017, -.013]$ \\
+    Full $K{=}4, L{=}16$ & $-0.026\ci{-0.06}{0.00} / {-0.021}\ci{-0.05}{0.01}$ & $-0.028 / {-0.024}$ & $M_0{=}{-1.07}$: $[0, -.001, -.007, -.011, -.018, -.026, -.029, -.028]$ & $M_0{=}{-0.54}$: $[0, -.002, -.005, -.005, -.015, -.021, -.025, -.024]$ \\
+    \midrule
+    Pos.\ $K{=}2, L{=}4$  & $-0.100\ci{-0.24}{0.03} / {-0.108}\ci{-0.26}{0.03}$ & $-0.154 / {-0.142}$ & $M_0{=}{-1.39}$: $[0, -.007, -.034, -.066, -.084, -.100, -.128, -.154]$ & $M_0{=}{-1.19}$: $[0, -.027, -.054, -.070, -.095, -.108, -.132, -.142]$ \\
+    Pos.\ $K{=}2, L{=}8$  & $-0.118\ci{-0.28}{0.03} / {-0.101}\ci{-0.27}{0.05}$ & $-0.161 / {-0.137}$ & $M_0{=}{-1.78}$: $[0, -.032, -.055, -.077, -.097, -.118, -.139, -.161]$ & $M_0{=}{-1.53}$: $[0, -.027, -.048, -.076, -.097, -.101, -.113, -.137]$ \\
+    Pos.\ $K{=}4, L{=}4$  & $-0.030\ci{-0.06}{-0.01} / {-0.016}\ci{-0.05}{0.01}$ & $-0.030 / {+0.003}$ & $M_0{=}{-1.68}$: $[0, -.009, -.011, -.020, -.024, -.030, -.029, -.030]$ & $M_0{=}{-1.17}$: $[0, -.001, +.003, -.002, -.011, -.016, -.010, +.003]$ \\
+    Pos.\ $K{=}4, L{=}8$  & $-0.027\ci{-0.05}{-0.01} / {-0.014}\ci{-0.04}{0.01}$ & $-0.037 / {-0.008}$ & $M_0{=}{-1.71}$: $[0, -.001, -.011, -.016, -.015, -.027, -.039, -.037]$ & $M_0{=}{-1.17}$: $[0, +.001, -.003, -.009, -.005, -.014, -.013, -.008]$ \\
+    \bottomrule
+  \end{tabular}%
+  }
+\end{table*}
+
+\section{Complete \texttt{E5} Post-Adaptation Tables (Tables E5-1 to E5-10)}
+\label{app:e5_tables}
+
+\begin{table*}[t]
+  \caption{\textbf{\texttt{E5} Tables E5-1, E5-2, E5-3: Post-Adaptation Donor Latent Swaps and Non-Zero Control Arms ($20,482$ Runs).} Despite \texttt{E5} achieving $67.00\%$--$85.33\%$ \texttt{Vision-Masked} accuracy, \texttt{Relevant} minus \texttt{Self} donor transfer is strictly $0.00\ci{0.00}{0.00}$ across all conditions and subsets, while slot zeroing under \texttt{Vision-Masked} slightly increases accuracy ($+0.65$ to $+2.34$pp).}
+  \label{tab:s6_e5_e3a}
+  \centering
+  \footnotesize
+  \resizebox{\textwidth}{!}{%
+\begin{tabular}{l c c c c c}
+    \toprule
+    \textbf{Cond.\ ($K/L$)} & \textbf{Coverage (Full / Pos / Chain)} & \textbf{Rel$-$Self (Unmask)} & \textbf{Rel$-$Self (V-Mask)} & \textbf{Rel$-$Irrel (Unmask / V-Mask)} & \textbf{Chain Zero-Event 95\% UB} \\
+    \midrule
+    $2 / 4$  & $41{:}92 / 12{:}23 / 11{:}21$ & $\mathbf{0.00}\ci{0.00}{0.00}$ & $\mathbf{0.00}\ci{0.00}{0.00}$ & $0.00 / 0.00$ & $23.84\%$ \\
+    $2 / 8$  & $41{:}92 / 11{:}23 / 10{:}21$ & $\mathbf{0.00}\ci{0.00}{0.00}$ & $\mathbf{0.00}\ci{0.00}{0.00}$ & $0.00 / 0.00$ & $25.89\%$ \\
+    $2 / 16$ & $41{:}92 / 10{:}20 / \phantom{0}9{:}18$ & $\mathbf{0.00}\ci{0.00}{0.00}$ & $\mathbf{0.00}\ci{0.00}{0.00}$ & $0.00 / 0.00$ & $28.31\%$ \\
+    $4 / 4$  & $64{:}174 / 36{:}80 / 32{:}73$ & $\mathbf{0.00}\ci{0.00}{0.00}$ & $\mathbf{0.00}\ci{0.00}{0.00}$ & $0.00 / {-0.26\text{ to }-0.78}$ & $8.94\%$ \\
+    $4 / 8$  & $64{:}174 / 33{:}74 / 29{:}68$ & $\mathbf{0.00}\ci{0.00}{0.00}$ & $\mathbf{0.00}\ci{0.00}{0.00}$ & $0.00 / 0.00$ & $9.81\%$ \\
+    $4 / 16$ & $64{:}174 / 35{:}82 / 32{:}75$ & $\mathbf{0.00}\ci{0.00}{0.00}$ & $\mathbf{0.00}\ci{0.00}{0.00}$ & $0.00 / 0.00$ & $8.94\%$ \\
+    \midrule
+    \multicolumn{6}{l}{\textbf{All Non-Zero Control Arms Relative to Same-Mode Self (Table E5-3, all $K=4$; all other defined controls are $0.00\ci{0.00}{0.00}$):}} \\
+    \multicolumn{6}{l}{• $L{=}4$, \texttt{Vision-Masked}, \texttt{Zero-Patch}: Full $+0.65\ci{0.00}{1.69}$, Pos $+2.08\ci{0.00}{5.56}$, Chain $+2.34\ci{0.00}{6.25}$; Irrel/App/NormIrrel/Orth: $+0.26 / +0.69 / +0.78$.} \\
+    \multicolumn{6}{l}{• $L{=}16$, \texttt{Unmasked}, \texttt{Zero-Patch}: $+0.26 / +0.71 / +0.78$; $L{=}16$, \texttt{Vision-Masked}, \texttt{DevMean}: $-0.26 / {-0.71} / {-0.78}$; $L{=}8$, \texttt{Unmasked}, \texttt{NormIrrel}: $-0.78 / 0 / 0$.} \\
+    \bottomrule
+  \end{tabular}%
+  }
+\end{table*}
+
+\begin{table*}[t]
+  \caption{\textbf{\texttt{E5} Tables E5-4, E5-5, E5-7, E5-9: Post-Adaptation Multi-Step Accuracy on 150 Frozen Clusters ($9,600$ Runs).} Full-chain exact-match accuracy ($\%$), paired pre-vs-post training gain (pp), per-position mean accuracy ($\%$), and post-training latent/mask contrasts.}
+  \label{tab:s7_e5_e1}
+  \centering
+  \footnotesize
+  \setlength{\tabcolsep}{3.5pt}
+  \resizebox{\textwidth}{!}{%
+\begin{tabular}{l c c c c c c}
+    \toprule
+    & \multicolumn{4}{c}{\textbf{Post-Adaptation Full-Chain Accuracy (\%) / Paired Gain vs.\ Pre-Train (pp)}} & \multicolumn{2}{c}{\textbf{Post-Train Contrasts ($K=4$ S / I, pp)}} \\
+    \cmidrule(lr){2-5} \cmidrule(lr){6-7}
+    \textbf{Strategy (Epoch 2 Adapter)} & \textbf{$K=2$ Serial} & \textbf{$K=2$ Indep.} & \textbf{$K=4$ Serial} & \textbf{$K=4$ Indep.} & \textbf{Native $-$ NoLatent} & \textbf{V-Mask $-$ Unmask} \\
+    \midrule
+    \texttt{NoLatent} (Adapted) & $83.67 / +10.00$ & $85.00 / \phantom{0}+9.00$ & $\mathbf{70.00} / +35.00$ & $70.00 / +39.33$ & $0.00$ (Ref.) & — \\
+    \texttt{Native} $L=4$       & $82.67 / +19.67$ & $84.33 / +20.33$ & $\mathbf{70.00} / \mathbf{+49.00}$ & $68.33 / \mathbf{+50.33}$ & $\phantom{+}0.00 / {-1.67}$ & $-1.67 / {-1.00}$ \\
+    \texttt{Native} $L=8$       & $83.00 / +26.00$ & $85.00 / +28.67$ & $69.67 / \mathbf{+45.33}$ & $\mathbf{70.67} / \mathbf{+51.67}$ & $-0.33 / +0.67$ & $\phantom{+}0.00 / {-3.33}$ \\
+    \texttt{Native} $L=16^\dagger$ & $83.00 / +24.00$ & $84.00 / +26.00$ & $69.67 / \mathbf{+45.00}$ & $68.67 / \mathbf{+45.00}$ & $-0.33 / {-1.33}$ & $-0.33 / {-1.67}$ \\
+    \texttt{Text-CoT}$^\dagger$ & $82.33 / +14.00$ & $83.67 / +13.67$ & $68.33 / +30.67$ & $71.33 / +36.67$ & — & — \\
+    \midrule
+    $L=4$, \texttt{Vision-Masked}  & $\mathbf{84.67}\ci{79.0}{90.0}$ & $\mathbf{85.33}\ci{79.7}{90.3}$ & $68.33\ci{61.0}{75.3}$ & $67.33\ci{60.0}{74.7}$ & \multicolumn{2}{c}{Per-Pos Mean: $91.50 / 91.83 / 88.08 / 87.25\%$} \\
+    $L=8$, \texttt{Vision-Masked}  & $83.00\ci{77.0}{88.7}$ & $84.67\ci{78.7}{90.0}$ & $\mathbf{69.67}\ci{62.7}{76.3}$ & $67.33\ci{60.3}{74.3}$ & \multicolumn{2}{c}{Per-Pos Mean: $90.50 / 91.33 / 88.17 / 87.33\%$} \\
+    $L=16$, \texttt{Vision-Masked} & $82.33\ci{76.3}{88.0}$ & $84.67\ci{79.0}{90.0}$ & $69.33\ci{62.7}{76.0}$ & $67.00\ci{59.7}{74.0}$ & \multicolumn{2}{c}{Per-Pos Mean: $89.83 / 91.33 / 87.42 / 86.83\%$} \\
+    \bottomrule
+  \end{tabular}%
+  }
+\end{table*}
+
+\begin{table*}[t]
+  \caption{\textbf{\texttt{E5} Tables E5-8a, E5-8b, E5-10: Post-Adaptation $K=4$ Per-Position Breakdown and Construction-Type Stratification ($92$ Instance-Composited vs.\ $58$ Polygon-Recolored Clusters).}}
+  \label{tab:s8_e5_pos_strat}
+  \centering
+  \footnotesize
+  \setlength{\tabcolsep}{3.5pt}
+  \resizebox{\textwidth}{!}{%
+\begin{tabular}{l c c c c c c}
+    \toprule
+    \textbf{Strategy / Mode ($K=4$)} & \textbf{Pos 1 (\%)} & \textbf{Pos 2 (\%)} & \textbf{Pos 3 (\%)} & \textbf{Pos 4 (\%)} & \textbf{Slope (pp/step)} & \textbf{Stratified Gain: Composited ($n{=}92$) vs.\ Polygon ($n{=}58$)} \\
+    \midrule
+    \texttt{NoLatent} (Serial / Indep.) & $93.7 / 95.0$ & $94.3 / 90.0$ & $91.0 / 91.7$ & $78.0 / 81.3$ & $-5.03 / {-3.93}$ & Serial: $44.6{\to}82.6\%$ ($+38.0$) vs.\ $19.8{\to}50.0\%$ ($+30.2$) \\
+    \texttt{Native} $L{=}4$ (Serial / Indep.) & $94.0 / 94.0$ & $94.0 / 88.7$ & $91.0 / 91.3$ & $79.3 / 81.3$ & $-4.70 / {-3.53}$ & Serial: $27.2{\to}83.2\%$ ($+56.0$) vs.\ $11.2{\to}49.1\%$ ($+37.9$) \\
+    \texttt{Native} $L{=}8$ (Serial / Indep.) & $94.0 / 94.3$ & $92.7 / 88.3$ & $90.7 / 92.3$ & $78.7 / 82.0$ & $-4.80 / {-3.30}$ & Indep.\ $L{=}4$: $25.0{\to}84.8\%$ ($+59.8$) vs.\ $6.9{\to}42.2\%$ ($+35.3$) \\
+    $L{=}4$ \texttt{V-Mask} (Serial / Indep.) & $94.3 / 94.0$ & $91.7 / 88.0$ & $87.0 / 87.0$ & $79.3 / 80.0$ & $-4.97 / {-4.30}$ & Indep.\ \texttt{NoLat}: $41.3{\to}85.9\%$ ($+44.6$) vs.\ $13.8{\to}44.8\%$ ($+31.0$) \\
+    $L{=}8$ \texttt{V-Mask} (Serial / Indep.) & $93.7 / 93.3$ & $91.3 / 87.3$ & $87.3 / 87.7$ & $80.3 / 81.0$ & $-4.40 / {-3.67}$ & — \\
+    \bottomrule
+  \end{tabular}%
+  }
+\end{table*}
+
+\section{Complete \texttt{E6} Full-Isolation Tables (Tables E6-1 to E6-4e)}
+\label{app:e6_tables}
+
+\begin{table*}[t]
+  \caption{\textbf{Table S9 (\texttt{E6} Checkpoint Selection, Table E6-2b Per-Position Accuracy, and Table E6-3d Direct Input Counterfactual Baselines).} Top: validation Phase-B answer cross-entropy across 4 epochs ($320$ updates). Middle: per-position accuracy under strict image-free Phase B on 150 frozen clusters. Bottom: direct edited-position accuracy ($\%$) on $\Vorig$, $\Vrel$ (unseen \texttt{yellow/brown} target labels), and $\Virrel$.}
+  \label{tab:s9_e6_details}
+  \centering
+  \footnotesize
+  \setlength{\tabcolsep}{3.8pt}
+  \resizebox{\textwidth}{!}{%
+\begin{tabular}{l c c c c c c}
+    \toprule
+    \textbf{Part A: Phase-B Validation Answer CE} & \textbf{Epoch 1} & \textbf{Epoch 2} & \textbf{Epoch 3} & \textbf{Epoch 4} & \textbf{Selected Checkpoint} & \textbf{Selection Rule} \\
+    \midrule
+    \texttt{E6-A} (Step-Aligned Sub-Windows) & $0.18379$ & $0.13053$ & $0.13004$ & $\mathbf{0.11426}$ & \texttt{epoch\_4} & Lowest 10-scene dev Phase-B CE \\
+    \texttt{E6-B} (Shared Prototype Control) & $\mathbf{0.24802}$ & $0.32979$ & $0.57862$ & $0.88242$ & \texttt{epoch\_1} & Lowest 10-scene dev Phase-B CE \\
+    \bottomrule
+  \end{tabular}%
+  }
+  \vspace{4pt}
+
+  \resizebox{\textwidth}{!}{%
+\begin{tabular}{l c c c c c c c}
+    \toprule
+    \textbf{Part B \& C: Strict Phase-B Per-Position ($K=4$)} & \textbf{Pos 1 (\%)} & \textbf{Pos 2 (\%)} & \textbf{Pos 3 (\%)} & \textbf{Pos 4 (\%)} & \textbf{Direct $\Vorig$ (\%)} & \textbf{Direct $\Vrel$ (\%)} & \textbf{Direct $\Virrel$ (\%)} \\
+    \midrule
+    Native \texttt{LVR-7B} ($K=4$ Serial / Indep.) & $20.3 / 22.0$ & $10.7 / \phantom{0}7.7$ & $12.3 / \phantom{0}9.3$ & $12.3 / 13.0$ & $66.02\ci{56.4}{75.3}$ & $59.24\ci{49.0}{68.9}$ & $68.75\ci{59.4}{77.6}$ \\
+    \texttt{E5} ($K=4$ Serial / Indep.)            & $34.0 / 32.3$ & $33.0 / 33.3$ & $27.0 / 30.3$ & $29.0 / 32.7$ & $95.31\ci{89.1}{100}$ & $41.15\ci{30.6}{51.8}$ & $96.09\ci{90.6}{100}$ \\
+    \texttt{E6-B} ($K=4$ Serial / Indep.)          & $34.7 / 33.3$ & $29.3 / 29.3$ & $28.3 / 31.3$ & $34.3 / 30.7$ & $30.21\ci{21.4}{40.1}$ & $\phantom{0}0.00\ci{0.00}{0.00}$ & $30.21\ci{21.1}{39.8}$ \\
+    \textbf{\texttt{E6-A}} ($K=4$ Serial / Indep.) & $\mathbf{93.7} / \mathbf{94.0}$ & $\mathbf{92.3} / \mathbf{92.0}$ & $\mathbf{93.3} / \mathbf{93.7}$ & $\mathbf{81.7} / \mathbf{85.7}$ & $\mathbf{97.66}\ci{94.5}{100}$ & $\phantom{0}\mathbf{3.12}\ci{0.78}{6.25}$ & $\mathbf{97.66}\ci{94.5}{100}$ \\
+    \bottomrule
+  \end{tabular}%
+  }
+\end{table*}
+
+\begin{table*}[t]
+  \caption{\textbf{\texttt{E6} Full Table E6-4e: 8-Point Continuous Interpolation Log-Odds Shift $\delta M(\alpha)$ for Full-Tape ($2K$ Slots) vs.\ Step-Matched 2-Slot Window (\texttt{Win-Matched}).} Values report cluster-bootstrap point estimates and $95\%$ intervals across $\alpha \in [0, 0.2, 0.4, 0.6, 0.8, 1.0, 1.5, 2.0]$. Interpolating only the 2 slots of the edited step (\texttt{Win-Matched}) recovers $100.0\%$ ($K=2$) and $99.64\%$ ($K=4$) of the full-tape log-odds shift.}
+  \label{tab:s10_e6_interp}
+  \centering
+  \footnotesize
+  \setlength{\tabcolsep}{3.5pt}
+  \resizebox{\textwidth}{!}{%
+\begin{tabular}{c c c c c c c}
+    \toprule
+    & \multicolumn{2}{c}{\textbf{\texttt{E6-A} $K=2$ Full Set ($92$ Pairs / $41$ Clusters)}} & \multicolumn{2}{c}{\textbf{\texttt{E6-A} $K=4$ Full Set ($174$ Pairs / $64$ Clusters)}} & \multicolumn{2}{c}{\textbf{\texttt{E6-B} Shared Prototype (Full Set)}} \\
+    \cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7}
+    $\boldsymbol{\alpha}$ & \textbf{Full Tape (4 Slots)} & \textbf{Matched 2-Slot Win.} & \textbf{Full Tape (8 Slots)} & \textbf{Matched 2-Slot Win.} & \textbf{$K=2$ (Full / Win)} & \textbf{$K=4$ (Full / Win)} \\
+    \midrule
+    $0.0$ & $0.00\ci{0.00}{0.00}$ & $0.00\ci{0.00}{0.00}$ & $0.00\ci{0.00}{0.00}$ & $0.00\ci{0.00}{0.00}$ & $0.00 / 0.00$ & $\phantom{-}0.00 / \phantom{-}0.00$ \\
+    $0.2$ & $0.36\ci{0.27}{0.46}$ & $\mathbf{0.36}\ci{0.28}{0.45}$ & $0.34\ci{0.29}{0.40}$ & $\mathbf{0.34}\ci{0.29}{0.40}$ & $0.01 / 0.00$ & $\phantom{-}0.00 / \phantom{-}0.01$ \\
+    $0.4$ & $0.89\ci{0.68}{1.12}$ & $\mathbf{0.89}\ci{0.68}{1.11}$ & $0.83\ci{0.70}{0.95}$ & $\mathbf{0.82}\ci{0.69}{0.94}$ & $0.01 / 0.00$ & $-0.00 / \phantom{-}0.00$ \\
+    $0.6$ & $1.67\ci{1.24}{2.10}$ & $\mathbf{1.67}\ci{1.25}{2.12}$ & $1.42\ci{1.21}{1.64}$ & $\mathbf{1.41}\ci{1.19}{1.62}$ & $0.01 / 0.01$ & $\phantom{-}0.00 / \phantom{-}0.00$ \\
+    $0.8$ & $2.61\ci{1.93}{3.27}$ & $\mathbf{2.60}\ci{1.97}{3.28}$ & $2.11\ci{1.79}{2.45}$ & $\mathbf{2.09}\ci{1.77}{2.43}$ & $0.02 / 0.01$ & $\phantom{-}0.01 / \phantom{-}0.00$ \\
+    $1.0$ & $\mathbf{3.58}\ci{2.68}{4.50}$ & $\mathbf{3.58}\ci{2.69}{4.48}$ & $\mathbf{2.76}\ci{2.34}{3.20}$ & $\mathbf{2.75}\ci{2.31}{3.21}$ & $0.01 / 0.01$ & $\phantom{-}0.01 / \phantom{-}0.00$ \\
+    $1.5$ & $5.62\ci{4.31}{7.01}$ & $\mathbf{5.62}\ci{4.24}{7.00}$ & $4.05\ci{3.45}{4.71}$ & $\mathbf{4.01}\ci{3.38}{4.66}$ & $0.02 / 0.02$ & $\phantom{-}0.01 / \phantom{-}0.01$ \\
+    $2.0$ & $\mathbf{6.75}\ci{5.22}{8.30}$ & $\mathbf{6.73}\ci{5.19}{8.24}$ & $\mathbf{4.76}\ci{4.03}{5.48}$ & $\mathbf{4.72}\ci{3.98}{5.47}$ & $0.03 / 0.02$ & $\phantom{-}0.01 / {-0.00}$ \\
+    \midrule
+    \textbf{Linear Slope} & $\mathbf{+3.65}\ci{2.84}{4.51}$ & $\mathbf{+3.65}\ci{2.79}{4.54}$ & $\mathbf{+2.55}\ci{2.15}{2.96}$ & $\mathbf{+2.53}\ci{2.13}{2.93}$ & $+0.01 / +0.01$ & $+0.01 / {-0.00}$ \\
+    \bottomrule
+  \end{tabular}%
+  }
+\end{table*}
+
+\begin{table*}[t]
+  \caption{\textbf{\texttt{E6} Full Tables E6-3a, E6-3b, E6-3c: Whole-Span Donor Patching (\texttt{Donor-All}), Subset Coverage, and Slot-Zeroing Drop.} Under the strict two-phase image-free interface, \texttt{Donor-All} is sample-by-sample identical to direct evaluation on $\Vrel$ (Proposition~\ref{prop:isolation}), achieving $100.00\%$ flip rate on the eligible subset of \texttt{E6-A}, while zeroing the slots drops full-set accuracy by $80.49$--$81.25$pp.}
+  \label{tab:s11_e6_3abc}
+  \centering
+  \footnotesize
+  \setlength{\tabcolsep}{3.5pt}
+  \resizebox{\textwidth}{!}{%
+\begin{tabular}{l c c c c c}
+    \toprule
+    \textbf{Model / $K$} & \textbf{Coverage (Full / Pos / Chain)} & \textbf{Full Set Flip / Rel$-$Self} & \textbf{Pos-Elig.\ Flip / Rel$-$Self} & \textbf{Chain-Elig.\ Flip / Rel$-$Self} & \textbf{Zero Drop (Full / Pos / Chain, pp)} \\
+    \midrule
+    Native \texttt{LVR} $K{=}2$ & $92{:}41 / 41{:}24 / 30{:}18$ & $1.22 / {-1.22}\ci{-4.88}{2.44}$ & $4.17 / +4.17\ci{0.00}{12.50}$ & $5.56 / +5.56\ci{0.00}{16.67}$ & $-13.41\ci{-24.4}{-2.4} / \phantom{+}0.00 / +5.56$ \\
+    Native \texttt{LVR} $K{=}4$ & $174{:}64 / 68{:}37 / 12{:}7\phantom{0}$ & $0.26 / \phantom{+}0.00\ci{0.00}{0.00}$ & $0.68 / +0.68\ci{0.00}{2.03}$ & $0.00 / \phantom{+}0.00\ci{0.00}{0.00}$ & $-7.81\ci{-14.8}{-0.8} / {-8.11} / +28.57$ \\
+    \texttt{E5} $K{=}2$         & $92{:}41 / 17{:}9\phantom{0} / 17{:}9\phantom{0}$ & $0.00 / \phantom{+}0.00\ci{0.00}{0.00}$ & $0.00 / \phantom{+}0.00\ci{0.00}{0.00}$ & $0.00 / \phantom{+}0.00\ci{0.00}{0.00}$ & $\phantom{+}0.00\ci{0.00}{0.00} / \phantom{+}0.00 / \phantom{+}0.00$ \\
+    \texttt{E5} $K{=}4$         & $174{:}64 / 73{:}32 / 63{:}27$ & $0.00 / \phantom{+}0.00\ci{0.00}{0.00}$ & $0.00 / \phantom{+}0.00\ci{0.00}{0.00}$ & $0.00 / \phantom{+}0.00\ci{0.00}{0.00}$ & $+2.34\ci{-1.56}{6.25} / \phantom{+}0.00 / +3.70$ \\
+    \texttt{E6-B} $K{=}2$       & $92{:}41 / \phantom{0}0{:}0\phantom{0} / \phantom{0}0{:}0\phantom{0}$ & $0.00 / \phantom{+}0.00\ci{0.00}{0.00}$ & NA (empty subset) & NA (empty subset) & $+1.22\ci{0.00}{3.66} / \text{NA} / \text{NA}$ \\
+    \texttt{E6-B} $K{=}4$       & $174{:}64 / \phantom{0}0{:}0\phantom{0} / \phantom{0}0{:}0\phantom{0}$ & $0.00 / \phantom{+}0.00\ci{0.00}{0.00}$ & NA (empty subset) & NA (empty subset) & $\phantom{+}0.00\ci{-2.34}{2.34} / \text{NA} / \text{NA}$ \\
+    \textbf{\texttt{E6-A}} $K{=}2$ & $92{:}41 / \phantom{0}0{:}0\phantom{0} / \phantom{0}0{:}0\phantom{0}$ & $0.00 / \phantom{+}0.00\ci{0.00}{0.00}$ & NA (empty subset) & NA (empty subset) & $\mathbf{+80.49}\ci{68.29}{91.46} / \text{NA} / \text{NA}$ \\
+    \textbf{\texttt{E6-A}} $K{=}4$ & $174{:}64 / \phantom{0}5{:}4\phantom{0} / \phantom{0}4{:}3\phantom{0}$ & $\mathbf{3.12} / \mathbf{+3.12}\ci{0.78}{6.25}$ & $\mathbf{100.0} / \mathbf{+100.0}\ci{100}{100}$ & $\mathbf{100.0} / \mathbf{+100.0}\ci{100}{100}$ & $\mathbf{+81.25}\ci{71.88}{89.84} / 50.0 / 66.7$ \\
+    \bottomrule
+  \end{tabular}%
+  }
+\end{table*}
+
+\begin{table*}[t]
+  \caption{\textbf{\texttt{E6} Full Tables E6-4a, E6-4b, E6-4c: Sub-Window Free-Generation Directional Flip Rates (\texttt{Win-Matched} vs.\ \texttt{Win-Unmatched}), Non-Edited Step Retention, and Full-Chain Counterfactual Success.}}
+  \label{tab:s12_e6_4abc}
+  \centering
+  \footnotesize
+  \setlength{\tabcolsep}{3.8pt}
+  \resizebox{\textwidth}{!}{%
+\begin{tabular}{l c c c c c}
+    \toprule
+    \textbf{Model / $K$ / Population} & \textbf{Win-Matched Flip (\%)} & \textbf{Win-Unmatched Flip (\%)} & \textbf{Matched $-$ Unmatched (pp)} & \textbf{Target Flip \& Others Kept (\%)} & \textbf{Full Chain $=$ $\Vrel$ Gold (\%)} \\
+    \midrule
+    \texttt{E6-A} / $K{=}2$ / Full Set      & $0.00\ci{0.00}{0.00}$ & $0.00\ci{0.00}{0.00}$ & $0.00\ci{0.00}{0.00}$ & $0.00\ci{0.00}{0.00}$ & $0.00\ci{0.00}{0.00}$ \\
+    \texttt{E6-A} / $K{=}4$ / Full Set      & $\mathbf{3.12}\ci{0.78}{6.25}$ & $0.00\ci{0.00}{0.00}$ & $\mathbf{+3.12}\ci{0.78}{6.25}$ & $\mathbf{3.12}\ci{0.78}{6.25}$ & $\mathbf{2.34}\ci{0.00}{5.47}$ \\
+    \texttt{E6-A} / $K{=}4$ / Pos-Eligible  & $\mathbf{100.00}\ci{100}{100}$ & $0.00\ci{0.00}{0.00}$ & $\mathbf{+100.00}\ci{100}{100}$ & $\mathbf{100.00}\ci{100}{100}$ & $\mathbf{75.00}\ci{25.0}{100}$ \\
+    \texttt{E6-A} / $K{=}4$ / Chain-Eligible & $\mathbf{100.00}\ci{100}{100}$ & $0.00\ci{0.00}{0.00}$ & $\mathbf{+100.00}\ci{100}{100}$ & $\mathbf{100.00}\ci{100}{100}$ & $\mathbf{100.00}\ci{100}{100}$ \\
+    \midrule
+    \texttt{E6-B} / $K{=}2$ / Full Set      & $0.00\ci{0.00}{0.00}$ & $0.00\ci{0.00}{0.00}$ & $0.00\ci{0.00}{0.00}$ & $0.00\ci{0.00}{0.00}$ & $0.00\ci{0.00}{0.00}$ \\
+    \texttt{E6-B} / $K{=}4$ / Full Set      & $0.00\ci{0.00}{0.00}$ & $0.00\ci{0.00}{0.00}$ & $0.00\ci{0.00}{0.00}$ & $0.00\ci{0.00}{0.00}$ & $0.00\ci{0.00}{0.00}$ \\
+    \midrule
+    \multicolumn{6}{l}{\textbf{Difference-in-Differences $(\text{Matched} - \text{Unmatched})_{\texttt{E6-A}} - (\text{Matched} - \text{Unmatched})_{\texttt{E6-B}}$:} $K{=}2$ Full: $0.00\ci{0.00}{0.00}$ pp; $K{=}4$ Full: $\mathbf{+3.12}\ci{0.78}{6.25}$ pp.} \\
+    \bottomrule
+  \end{tabular}%
+  }
+\end{table*}
+
+\section{Reproducibility, Implementation Details, and Protocol Scope}
+\label{app:reproducibility}
+
+\textbf{Model Checkpoints and Hardware.} All experiments use the official open-source \texttt{LVR-Qwen2.5-VL-7B-SFT} checkpoint (commit \texttt{637a9f7e17e8}, weight SHA \texttt{413c55c908c1})~\cite{li2026lvr} and \texttt{Qwen2.5-VL-7B-Instruct}~\cite{bai2025qwen25vl} in \texttt{bfloat16} precision with deterministic greedy decoding ($\text{temperature}=0$) on a single NVIDIA RTX 4090D GPU (24GB VRAM). As documented in the official repository (Issue \#19), 3B SFT/RL checkpoints were not publicly released by the original authors; all evaluations and adaptations are therefore conducted on the official 7B backbone.
+
+\textbf{Training Protocols for \texttt{E5}, \texttt{E6-A}, and \texttt{E6-B}.}
+The $50$ development scene clusters are partitioned into $40$ training clusters and $10$ validation clusters ($7$ instance-composited, $3$ polygon-recolored), with zero source-image overlap against the $150$ frozen evaluation clusters ($1,070$ evaluation source photos vs.\ $400$ dev source photos).
+In \texttt{E5}, LoRA adapters (\texttt{q\_proj, v\_proj}, rank $8$, $\alpha=16$, dropout $0.05$, learning rate $10^{-4}$, batch accumulation $4$) are trained for $2$ epochs ($160$ optimizer updates) with $L=2K$, aligning each 2-slot window via normalized MSE to the target ROI mean visual feature plus $0.1\times$ 8-color cross-entropy, while masking visual keys during text answer decoding with probability $0.6$ ($\mathrm{TBPTT}=1$).
+In \texttt{E6-A} and \texttt{E6-B}, both models initialize from the same native \texttt{LVR-7B} weights (seed \texttt{20261103}) and attach LoRA adapters to \texttt{q\_proj, k\_proj, v\_proj, o\_proj} (rank $16$, $\alpha=32$, dropout $0.05$, AdamW learning rate $2\times 10^{-4}$, gradient clipping $1.0$, batch accumulation $4$) for $4$ epochs ($1,280$ query presentations, $320$ updates). Checkpoints are selected strictly by lowest Phase-B validation answer cross-entropy on the $10$ dev validation clusters without accessing evaluation labels or intervention outcomes.
