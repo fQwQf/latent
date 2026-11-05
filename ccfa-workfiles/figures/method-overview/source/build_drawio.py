@@ -1,8 +1,8 @@
-"""Reference-faithful native draw.io construction (not a bitmap trace).
+"""Native draw.io mechanism figure: cached routes, all-layer swaps, isolated readout.
 Authoritative output: figs/fig1_teaser_overview.drawio. Export it with
 export_drawio.py to preserve manual edits. This constructor resets its geometry.
-Custom rounded paths, thin sidewalls, highlights and layered vector shadows are
-native stencil objects, grouped by scientific object; all live text is black.
+3D is restricted to exploded KV-layer sheets and across-layer selection frames.
+Computation operators and slot windows are flat. All editable text is black.
 """
 from pathlib import Path
 import xml.etree.ElementTree as E
@@ -10,9 +10,9 @@ import math, zlib, base64
 from urllib.parse import quote
 from functools import lru_cache
 ROOT=Path(__file__).resolve().parents[4]
-W,H=1800,920
+W,H=1800,1155
 mx=E.Element('mxfile',host='Electron',version='31.5.2')
-d=E.SubElement(mx,'diagram',id='causal-routing',name='Causal routing and strict isolation')
+d=E.SubElement(mx,'diagram',id='causal-routing',name='Cached routes, across-layer swaps, and isolated readout')
 m=E.SubElement(d,'mxGraphModel',dx=str(W),dy=str(H),grid='1',gridSize='10',guides='1',tooltips='1',connect='1',arrows='1',page='1',pageScale='1',pageWidth=str(W),pageHeight=str(H),background='#FFFFFF',shadow='0')
 r=E.SubElement(m,'root');E.SubElement(r,'mxCell',id='0');E.SubElement(r,'mxCell',id='1',parent='0')
 BLACK='#000000';TEAL='#277C83';BLUE='#3B6687';CORAL='#DD866E';GRAY='#A7ABB1'
@@ -51,37 +51,12 @@ def plane(id,x,y,w,h,skew,rad,fill,gradient=None,opacity=100,stroke='none',sw=.7
  st=f'shape=stencil({rounded_stencil(w,h,skew,rad)});fillColor={fill};strokeColor={stroke};strokeWidth={sw};opacity={opacity};connectable=0;'
  if gradient:st+=f'gradientColor={gradient};gradientDirection=south;'
  return cell(id,'',st,x,y,w,h,parent)
-def shadow(id,x,y,w,h,skew,rad,parent):
- # Smooth-looking soft contact shadow using translucent vector paths, with no
- # SVG blur filter and therefore no rasterization on PDF export.
- for k in range(24,0,-1):
-  spread=k*1.1
-  plane(f'{id}-{k}',x-spread,y+5-spread*.35,w+2*spread,h+spread*.6,skew,rad+spread,'#8C9DA3',opacity=1,parent=parent)
-def chip(id,x,y,w,h,skew,rad,top,bottom,side,parent='1',depth=5,shade=True):
- group(id,x,y,w,h+depth+4,parent)
- if shade:shadow(id+'-shadow',0,depth+3,w,h,skew,rad,id)
- plane(id+'-side',0,depth,w,h,skew,rad,side,bottom,parent=id)
- plane(id+'-face',0,0,w,h,skew,rad,top,bottom,stroke='#F6FFFC',sw=.35,parent=id)
- return id
-def stack(id,x,y,w,face_h,skew,rad,colors,layers=3,step=18,label='',size=31):
- top,bottom,side=colors;total=face_h+(layers-1)*step+7
- group(id,x,y,w,total)
- shadow(id+'-ambient',0,(layers-1)*step+10,w,face_h,skew,rad,id)
- for k in reversed(range(layers)):
-  yy=k*step
-  # Narrow bottom face and a hairline highlight preserve the reference's
-  # thin translucent layer appearance without dark outlines.
-  plane(f'{id}-layer-{k}-edge',0,yy+5,w,face_h,skew,rad,side,bottom,parent=id)
-  plane(f'{id}-layer-{k}',0,yy,w,face_h,skew,rad,top,bottom,stroke='#FAFFFD',sw=.4,parent=id)
- if label:text(id+'-label',label,skew*.35,face_h*.12,w-skew*.7,face_h*.76,size=size,parent=id)
- return id
-
-def edge(id,src,tgt,color=BLUE,points=None,source=None,target=None,exit=None,entry=None,arrow=True,dashed=False,width=3):
+def edge(id,src,tgt,color=BLUE,points=None,source=None,target=None,exit=None,entry=None,arrow=True,dashed=False,width=3,parent='1'):
  st=f'edgeStyle=none;rounded=1;arcSize=15;html=1;fontColor=#000000;strokeColor={color};strokeWidth={width};endArrow={"block" if arrow else "none"};endFill=1;endSize=8;'
  if dashed:st+='dashed=1;dashPattern=4 4;'
  if exit:st+=f'exitX={exit[0]};exitY={exit[1]};exitDx=0;exitDy=0;exitPerimeter=0;'
  if entry:st+=f'entryX={entry[0]};entryY={entry[1]};entryDx=0;entryDy=0;entryPerimeter=0;'
- attrs=dict(id=id,value='',style=st,edge='1',parent='1')
+ attrs=dict(id=id,value='',style=st,edge='1',parent=parent)
  if source:attrs['source']=source
  if target:attrs['target']=target
  c=E.SubElement(r,'mxCell',attrs);g=E.SubElement(c,'mxGeometry',relative='1',attrib={'as':'geometry'})
@@ -94,62 +69,139 @@ def edge(id,src,tgt,color=BLUE,points=None,source=None,target=None,exit=None,ent
 def cross(id,x,y,s=20):
  edge(id+'-a',(x-s,y-s),(x+s,y+s),CORAL,arrow=False,width=4)
  edge(id+'-b',(x-s,y+s),(x+s,y-s),CORAL,arrow=False,width=4)
+
+def box(id,x,y,w,h,fill='#F6F8F9',stroke='#B7C4CA',radius=10,parent='1'):
+ return cell(id,'',f'rounded=1;arcSize={radius};fillColor={fill};strokeColor={stroke};strokeWidth=1.6;',x,y,w,h,parent)
+
+def scope_frame(id,x,y,w,face_h,depth,height,color):
+ # A selection column intersects the same cache partition at every layer.
+ a=(x,y+face_h);b=(x+w,y+face_h);c=(x+w+depth,y);d=(x+depth,y)
+ aa=(a[0],a[1]+height);bb=(b[0],b[1]+height);cc=(c[0],c[1]+height)
+ for i,(u,v) in enumerate([(a,b),(b,c),(c,d),(d,a),(a,aa),(b,bb),(c,cc),(aa,bb),(bb,cc)]):
+  edge(f'{id}-{i}',u,v,color,arrow=False,dashed=True,width=2.2)
+
 cell('canvas','','fillColor=#FFFFFF;strokeColor=none;locked=1;connectable=0;',0,0,W,H)
-text('panel-a','(a) Single-pass: prefill relay',20,13,1040,48,size=36,bold=True,align='left')
-# Reference proportions: left 4x4 chip plane; separate cache sheets, decoder.
-group('visual-tokens',90,185,320,190)
-for row in range(4):
- for col in range(4):
-  chip(f'visual-{row}-{col}',66-22*row+62*col,row*37,60,28,10,10,'#C1ECE5','#9BDDD1','#72BFB2',parent='visual-tokens',depth=5)
-text('visual-label','Visual tokens',-3,160,330,42,parent='visual-tokens')
-stack('prompt-cache',724,177,466,60,50,20,('#FFEAE2','#F4CDC0','#E5AF9C'),label='Prompt / marker KV')
-stack('latent-cache',676,310,462,60,50,20,('#E5EDF4','#BACEDC','#8DAABE'),label='Latent KV')
-stack('answer-decoder',1335,195,414,132,60,23,('#ECF8F5','#CCEAE3','#95CFC4'),layers=2,step=12,label='Answer decoder',size=32)
-# Explicit connected ports retain the graph when grouped modules are moved.
-edge('direct-image-path',None,None,GRAY,[(303,116),(1542,116)],source='visual-tokens',target='answer-decoder',exit=(.666,0),entry=(.5,0))
-text('decode-mask-label','Decode-time mask',744,60,430,43,size=31)
-cross('decode-mask-cross',943,116,20)
-edge('visual-to-relay',None,None,CORAL,source='visual-tokens',target='prompt-cache',exit=(1,.21),entry=(.035,.46))
-text('relay-label','Prefill relay',470,170,250,40,size=31,bold=True)
-edge('relay-to-answer',None,None,CORAL,source='prompt-cache',target='answer-decoder',exit=(.975,.46),entry=(.1,.197))
-edge('visual-to-latent',None,None,BLUE,[(475,282),(475,348)],source='visual-tokens',target='latent-cache',exit=(1,.51),entry=(.04,.36))
-edge('latent-to-answer',None,None,BLUE,source='latent-cache',target='answer-decoder',exit=(.975,.36),entry=(.025,.98))
-edge('panel-divider',(20,445),(1780,445),'#D2D6DA',arrow=False,width=1.5)
-text('panel-b','(b) Two-phase: isolated readout',20,463,1180,47,size=36,bold=True,align='left')
-text('phase-a-label','Phase A',36,539,240,43,size=32,bold=True,align='left')
-text('phase-b-label','Phase B',1282,539,230,43,size=32,bold=True,align='left')
-text('image-question-label','Image + question',20,634,245,40,size=30,align='left')
-stack('parallel-emission',272,605,300,83,30,17,('#E6F5F1','#C2E7DE','#94CBBD'),layers=2,step=10,label='Parallel replay',size=31)
-edge('context-to-replay',(205,670),None,BLUE,target='parallel-emission',entry=(.01,.65))
-text('phase-a-detail','After no-grad rollout',254,738,340,38,size=28)
-# No extra oversized algorithm inset: full rollout/replay and gradient details
-# remain in the figure caption; the tape identity is explicit in the graphic.
-group('differentiable-tape',611,625,444,53)
-colors=[('#C1ECE3','#99D6C8','#7DBAAB'),('#FFE3D6','#F4BBA5','#DB9F87'),('#DDEAF4','#B2CADF','#91AEC7'),('#E0EDD8','#BCD4AB','#9EBB88')]
-for k,colorset in enumerate(colors):
+text('panel-a','(a) Decode masking leaves cached routes',24,16,850,48,size=34,bold=True,align='left')
+text('panel-b','(b) Test the full cache depth (E6-C)',930,16,850,48,size=34,bold=True,align='left')
+edge('top-panel-divider',(898,82),(898,582),'#D3DADD',arrow=False,width=1.3)
+
+# (a) A flat information-flow diagram. Both nonvisual cache partitions are
+# explicitly image-conditioned; a zero flip rate cannot remove either edge.
+text('image-input-label','Image V<sub>T</sub>',35,203,180,42,size=31)
+group('image-token-grid',55,252,132,104)
+for row in range(3):
+ for col in range(3):
+  box(f'visual-token-{row}-{col}',col*45,row*35,40,30,'#D7EAE5','#A2C6BC',radius=8,parent='image-token-grid')
+edge('visual-information-hub',(188,302),(247,302),TEAL,arrow=False,width=3)
+edge('direct-visual-read',(215,302),(777,274),GRAY,[(215,111),(777,111)],width=2.7)
+text('decode-mask-label','Direct visual read: masked',340,65,405,38,size=29)
+cross('decode-mask',748,111,14)
+box('prompt-cache-node',355,165,260,104,'#FFF1E9','#DBAA96',radius=0)
+text('prompt-cache-node-label','Prompt / markers',366,174,238,38,size=30)
+text('prompt-cache-node-symbol','KV<sub>Q,M</sub>',366,218,238,36,size=31)
+box('latent-cache-node',355,360,260,104,'#EEF4F9','#9DB6CA',radius=0)
+text('latent-cache-node-label','Latent positions',366,369,238,38,size=30)
+text('latent-cache-node-symbol','KV<sub>H</sub>',366,413,238,36,size=31)
+edge('image-conditions-prompt',(247,302),(347,217),CORAL,[(260,302),(260,217)],width=3)
+edge('image-conditions-latent',(247,302),(347,412),BLUE,[(260,302),(260,412)],width=3)
+box('masked-readout',710,282,155,106,'#F6F8F9','#B8C4CA')
+text('masked-readout-label','Readout',717,292,141,38,size=30)
+text('masked-readout-setting','m<sub>vis</sub> = 0',714,338,147,36,size=29)
+edge('prompt-read-route',(615,217),(702,313),CORAL,[(661,217),(661,313)],width=3.3)
+text('relay-label','relay',625,171,78,34,size=27)
+edge('latent-read-route',(615,412),(702,353),BLUE,[(661,412),(661,353)],width=3)
+text('cache-conditioning-takeaway','Both caches can contain visual information.<br>Swaps test their effect on the answer.',48,502,800,76,size=29)
+
+# (b) The only 3D construction: exploded layer sheets with aligned partitions.
+# Layers 1, 2, and 28 are shown, and the omitted layers are explicit. A wireframe
+# column means a swap through all layers, not a new tensor or simultaneous arms.
+text('prompt-partition-label','Prompt / markers',1003,116,360,40,size=31)
+text('latent-partition-label','Latent positions',1354,116,365,40,size=31)
+text('cache-layout-note','Swap donor KV across all layers',1047,166,650,36,size=28)
+for layer,yy in [(1,415),(2,350),(28,230)]:
+ group(f'cache-layer-{layer}',1010,yy,720,72)
+ plane(f'cache-layer-{layer}-edge',0,5,720,64,44,7,'#D1DADF','#E3E9EC',parent=f'cache-layer-{layer}')
+ plane(f'cache-layer-{layer}-sheet',0,0,720,64,44,7,'#F8FAFB','#EDF2F4',stroke='#D3DCE0',sw=.8,parent=f'cache-layer-{layer}')
+ plane(f'cache-layer-{layer}-prompt',15,4,330,56,40,5,'#FFE6D7','#EFBBA2',stroke='#FFFFFF',sw=.8,parent=f'cache-layer-{layer}')
+ plane(f'cache-layer-{layer}-latent',360,4,330,56,40,5,'#DFEAF3','#B7CCDD',stroke='#FFFFFF',sw=.8,parent=f'cache-layer-{layer}')
+text('prompt-partition-symbol','KV<sub>Q,M</sub>',1105,241,180,38,size=31)
+text('latent-partition-symbol','KV<sub>H</sub>',1450,241,180,38,size=31)
+scope_frame('all-layer-prompt-scope',1019,225,302,69,40,190,CORAL)
+scope_frame('all-layer-latent-scope',1364,225,302,69,40,190,BLUE)
+edge('layer-axis',(982,486),(982,275),'#88969F',width=1.5)
+text('layer-axis-label','Layer ℓ',919,214,94,42,size=28)
+for val,yy in [('28',294),('2',414),('1',479)]:
+ edge('layer-tick-'+val,(976,yy),(990,yy),'#88969F',arrow=False,width=1.5)
+ text('layer-label-'+val,val,928,yy-18,42,36,size=29)
+text('layer-ellipsis','⋮',936,331,30,45,size=34)
+# An ellipsis inside each selected column connects the omitted layer range.
+text('prompt-layer-ellipsis','⋮',1163,307,35,39,size=31)
+text('latent-layer-ellipsis','⋮',1509,307,35,39,size=31)
+text('prompt-swap-result','C3a/b: 96.88–100%',1005,514,365,42,size=31,bold=True)
+text('latent-swap-result','C2: 0.00%',1370,514,345,42,size=31,bold=True)
+text('swap-result-unit','Eligible flips · separate donor swaps',1003,562,710,36,size=28)
+
+edge('main-divider',(24,619),(1776,619),'#CFD7DC',arrow=False,width=1.4)
+text('panel-c','(c) Transfer latent inputs into a fresh readout (E6-A)',24,641,1700,48,size=35,bold=True,align='left')
+text('phase-a-label','Phase A',65,712,505,42,size=32,bold=True)
+text('phase-b-label','Phase B',1430,712,290,42,size=32,bold=True)
+
+# (c) Computations are flat operators, distinct from the layer-wise KV sheets.
+# Both the no-grad rollout and parallel replay receive the image/prompt inputs.
+text('phase-a-inputs','V<sub>T</sub>, Q, M<sub>start</sub>',70,768,500,38,size=31)
+edge('phase-a-input-bus',(320,810),(160,842),TEAL,[(320,825),(160,825)],width=2.5)
+edge('phase-a-replay-input',(320,825),(453,842),TEAL,[(453,825)],width=2.5)
+box('raw-rollout',60,850,200,104,'#F5F8F7','#AEC8C0')
+text('raw-rollout-label','AR rollout',67,860,186,39,size=31)
+text('raw-rollout-gradient','no grad',67,908,186,34,size=28)
+box('parallel-replay',335,850,235,104,'#F5F8F7','#AEC8C0')
+text('parallel-replay-label','Parallel<br>replay',348,867,209,68,size=32)
+edge('raw-to-replay',(260,902),(327,902),TEAL,width=2.8)
+text('raw-tape-label','H<sub>raw</sub>',264,860,66,32,size=27)
+edge('replay-emission',(570,902),(680,902),TEAL,width=3)
+text('replay-emission-label','H<sub>diff</sub>',577,849,108,36,size=29)
+edge('discard-a-cache',(453,960),(453,991),GRAY,arrow=False,width=2)
+cross('discard-a-cache-cross',453,979,13)
+text('discard-a-cache-label','Discard all Phase-A KV',125,1004,490,40,size=29)
+
+# H is a flat sequence of exactly eight editable slots, in four labeled pairs.
+# A two-slot evaluation window is aligned in the same coordinate system.
+group('recipient-tape',700,871,408,65)
+colors=[('#DCEFE9','#A3C9BC'),('#FBE2D6','#D6977C'),('#E1EBF4','#9BB6CB'),('#E5EEDB','#A4BB8D')]
+for k,(fill,stroke) in enumerate(colors):
  for j in range(2):
-  chip(f'step-{k+1}-slot-{j+1}',k*111+j*50,0,48,31,10,9,*colorset,parent='differentiable-tape',depth=5)
- center=611+k*111+49
- edge(f'window-{k+1}-bracket',(center-46,675),(center+46,675),BLACK,[(center-46,684),(center+46,684)],arrow=False,width=1.5)
- text(f'step-{k+1}-index',str(k+1),center-20,690,40,34,size=29)
- cell(f'step-{k+1}-target','',f'rounded=1;arcSize=20;fillColor={colorset[1]};gradientColor={colorset[0]};gradientDirection=north;strokeColor=none;',center-17,799,34,34)
- edge(f'step-{k+1}-supervision',(center,791),(center,736),GRAY,dashed=True,width=2.2)
-text('tape-label','H<sub>diff</sub>: 2 slots per step',606,558,453,46,size=31)
-edge('emission-to-tape',None,None,BLUE,source='parallel-emission',target='differentiable-tape',exit=(.99,.43),entry=(0,.43))
-edge('target-bracket',(611,849),(1043,849),'#788289',[(611,858),(1043,858)],arrow=False,width=1.4)
-text('supervision-label','Step-wise ROI / color supervision (train)',559,868,545,38,size=28)
-edge('isolation-boundary',(1078,537),(1078,873),GRAY,dashed=True,arrow=False,width=2)
-text('fresh-cache-label','Fresh cache',1090,548,200,41,size=29,align='left')
-stack('text-decoder',1293,605,309,83,30,17,('#E6F5F1','#C2E7DE','#94CBBD'),layers=2,step=10,label='Text decoder',size=31)
-edge('tape-only-transfer',None,None,BLUE,source='differentiable-tape',target='text-decoder',exit=(1,.43),entry=(.005,.43))
-text('no-detach-label','No detach',1098,607,178,34,size=28)
-text('question-label','Question',1123,708,195,38,size=30)
-edge('question-to-decoder',(1258,752),None,BLUE,[(1388,752)],target='text-decoder',entry=(.307,1))
-text('answers-label','Answers',1669,636,130,40,size=31)
-edge('decoder-to-answers',None,(1663,656),BLUE,source='text-decoder',exit=(.99,.51))
-stack('excluded-a-cache',1111,786,148,27,17,7,('#F2F4F5','#DDE1E5','#BDC5CD'),layers=3,step=12)
-cross('excluded-a-cache-cross',1182,815,22)
-text('excluded-cache-label','No image /<br>Phase-A cache',1089,851,218,67,size=28)
+  box(f'step-{k+1}-slot-{j+1}',k*108+j*45,0,39,65,fill,stroke,radius=5,parent='recipient-tape')
+ center=700+k*108+42
+ edge(f'window-{k+1}-bracket',(center-42,944),(center+42,944),BLACK,[(center-42,953),(center+42,953)],arrow=False,width=1.4)
+ text(f'window-{k+1}-index',str(k+1),center-20,961,40,34,size=29)
+text('window-step-label','Step',625,959,68,36,size=28)
+cell('selected-two-slot-window','','rounded=1;arcSize=5;fillColor=none;strokeColor=#BB6E51;strokeWidth=2;dashed=1;dashPattern=4 4;',800,863,100,81)
+text('donor-window-label','Eval: donor window m',697,712,440,42,size=29)
+for j in range(2):
+ xx=808+j*45
+ box(f'donor-slot-{j+1}',xx,771,39,60,'#FBE2D6','#D6977C',radius=5)
+ edge(f'donor-interpolation-{j+1}',(xx+19.5,839),(xx+19.5,862),CORAL,width=2.3)
+text('interpolation-alpha','α',905,824,40,38,size=31)
+text('tape-label','H<sub>diff</sub>: 2 slots per step (K = 4)',660,1010,540,40,size=30)
+text('interpolation-formula','H<sub>m</sub>(α) = (1 − α)H<sub>m</sub> + αH′<sub>m</sub>',626,1064,620,42,size=30)
+text('unchanged-window-note','Other windows stay fixed',690,1110,500,36,size=28)
+
+# Only the latent input is carried across phases. New text/marker caches may
+# depend on this input; the diagram does not assert their independence from H.
+edge('fresh-cache-boundary',(1290,778),(1290,1127),GRAY,arrow=False,dashed=True,width=2)
+text('fresh-cache-label','Fresh cache',1298,779,213,40,size=29)
+edge('latent-only-transfer',(1118,902),(1422,902),TEAL,width=3)
+text('latent-only-label','H only',1123,852,150,38,size=30)
+box('fresh-text-readout',1430,850,290,104,'#F5F8F9','#AFC3CD')
+text('fresh-text-readout-label','Text readout',1444,860,262,38,size=31)
+text('fresh-text-recompute','recompute all layers',1444,907,262,34,size=27)
+edge('question-markers-input',(1575,1008),(1575,962),BLUE,width=2.6)
+text('question-markers-label','Q + markers',1410,1016,330,40,size=30)
+edge('answer-output',(1720,902),(1750,902),BLUE,width=3)
+text('answer-label','Y',1755,878,37,44,size=32)
+text('training-note','Training: H<sub>diff</sub> is not detached<br>Answer-loss gradients reach replay',1315,1074,462,68,size=27)
+
 E.indent(mx,space='  ')
-path=ROOT/'figs/fig1_teaser_overview.drawio';E.ElementTree(mx).write(path,encoding='utf-8',xml_declaration=True)
+path=ROOT/'figs/fig1_teaser_overview.drawio'
+E.ElementTree(mx).write(path,encoding='utf-8',xml_declaration=True)
 print(path)

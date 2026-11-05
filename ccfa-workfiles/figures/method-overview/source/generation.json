@@ -1,45 +1,98 @@
 {
-  "renderer": "Native draw.io XML reconstruction; exports produced by drawio 31.5.2",
+  "renderer": "Native draw.io three-panel mechanism diagram; exports produced by drawio 31.5.2",
   "source": "sec/3_theory.tex Proposition 2; sec/4_benchmark.tex Two-Phase Strict Isolation Interface; sec/5_experiments.tex E6-C and E6-A/B",
-  "destination": "figs/fig1_teaser_overview.{drawio,svg,pdf,png}; PDF width 6.875 inches",
-  "reference": "Previous diagram: /home/fqwqf/.codex/generated_images/01a1a72e-e5a8-7f83-9788-7a0b74889c6a/exec-241809cf-f218-4615-a064-d261d7c5e427.png; topology reference only",
-  "prompt": "Redesign the attached scientific paper figure in a decisively contemporary visual language. The attached image is the EDIT TARGET and authoritative reference for topology and labels, NOT for appearance. The user explicitly dislikes its dated 1990s textbook/PowerPoint styling. Preserve all scientific meaning but substantially replace the visual treatment.\n\nOUTPUT: very crisp white-background landscape scientific figure, aspect ratio 2:1, ideally 3000 pixels wide or higher. Compact layout suitable for a two-column paper at 6.875 inches wide. TWO aligned horizontal lanes, (a) above and (b) below, with a quiet fine separator. No hero title, no poster framing, no card-dashboard layout.\n\nNEW DESIGN: refined modern editorial scientific illustration. Clean modern sans-serif typography resembling Inter or Helvetica Neue, regular/medium weight, charcoal #243444, NO serif text. Very shallow 2.5D physical representations with rounded edges, thin separated translucent-looking sheets and delicate ambient contact shadows. Render objects with smooth matte ceramic / frosted acrylic finish, not thick extruded parallelogram bricks. No dark contour outlines on 3D objects. No bevel borders, chrome, sketch texture, heavy gradient fills, or vintage clip art. Keep shape faces largely light and neutral, with soft cyan/teal #218F89 for visual tokens and the valid tape route, muted coral #DC856E for prefill relay, slate-blue #6784A6 for latent-cache layers. Strong high-contrast dark labels. Text floats frontally above or beside geometry and never tilts with the perspective. Connectors are precise thin flat vector-like lines with small arrowheads, smooth bends, consistent line weight and explicit endpoints. More polished and spacious locally, yet use the whole compact canvas. Change the silhouette and materials, not merely colors.\n\nEXACT TOPOLOGY:\n(a) label \"(a) Single-pass: prefill relay\". Left a fine 4x4 visual-token tile grid labeled \"Visual tokens\", tiles as tiny rounded low-profile chips. It has two paths into two separate compact horizontal layer stacks in the middle: upper coral \"Prompt / marker KV\", lower blue-gray \"Latent KV\". Each stack is depicted as 3 very thin separated sheets, with subtle depth and no thick sidewalls. Both stacks send rightward arrows into the same modest decoder representation on the right labeled \"Answer decoder\". The upper route is coral and labelled \"Prefill relay\". A separate light gray direct route arcs orthogonally above the two caches from Visual tokens toward Answer decoder, crossed by a small coral × and labelled \"Decode-time mask\". Do NOT cross out the latent-cache path. The diagram summarizes information routes rather than execution/token order.\n\n(b) label \"(b) Two-phase: isolated readout\". Left \"Phase A\" as a small plain typographic group label, NO pill badge. \"Image + question\" flows into a small restrained operation glyph labelled \"Parallel emission\". This sends a rightward arrow into an H ribbon labelled \"H: 2 slots per step\". Exactly EIGHT tiny rounded low-profile chips arranged horizontally in FOUR visibly separated PAIRS. Under pairs place \"1\", \"2\", \"3\", \"4\", with a minimal short bracket for each pair. Use four restrained chip tints to distinguish steps (teal, coral, blue-gray, sage); these are categorical step tags, not measured colors. Below each pair place one small ROI target swatch and exactly ONE short dashed vertical upward arrow from the swatch to that pair. No arrows from ROI swatches into Parallel emission. One thin grouping bracket beneath the swatches and the label \"Step-wise supervision (train)\".\nAfter the H tape place a thin vertical dashed isolation boundary labelled \"Fresh cache\". H crosses it via exactly one rightward arrow to a light modern decoder representation labelled \"Text decoder\" in the group \"Phase B\". Add an independent \"Question\" input below that decoder with a clear arrow into it. The Text decoder sends a short rightward arrow to \"Answers\". Under the boundary place a SMALL pale stack crossed by ×, labelled \"No image / A-cache\". No visual tokens and no Phase-A cache transfer across that boundary. H is the sole visual-information conduit.\n\nLABEL INVENTORY: All labels listed above, exactly once each; group indices 1,2,3,4. Do not add numbers, results, text paragraphs, slogans, equations, or acronym expansions. Prioritize readable type at final paper size, equal optical sizes, clean whitespace lanes for arrows, aligned module centers, and scientific correctness. The result should feel modern, precise and light, not cartoonish, not an app screenshot, not glossy corporate clip art.",
-  "style": "Reference-faithful shallow rounded planes with thin sidewalls, soft vector contact shadows and sans-serif type. All text is pure black (#000000), including labels and numeric annotations. Geometry, spacing and silhouettes reconstructed from the accepted modern raster reference; no stock parallelograms.",
-  "editability": "All graphics are editable native draw.io stencil paths, live text, connectors and semantic groups. Shadows use translucent vector paths. PDF and SVG contain no raster images.",
+  "destination": "figs/fig1_teaser_overview.{drawio,pdf}; paper PDF width 6.875 inches; disposable SVG/PNG previews in ccfa-workfiles/figures/method-overview/build/",
+  "reference": "Prior accepted raster supplied palette/type cues only. Current geometry is authored from the manuscript to explain cross-layer intervention scope; no raster background or tracing.",
+  "style": "White canvas, pure-black live sans-serif text, restrained teal/coral/blue/sage. Flat dependency nodes and computations; 3D is confined to three exploded cache-layer sheets with aligned all-layer selection frames. No channel axis, dense 28-line texture, decorative 3D operators, or bitmap assets.",
+  "editability": "Native draw.io stencil faces, flat shapes, live text, connectors and semantic groups. Cache layers 1, 2 and 28 are separate groups with prompt/marker and latent partitions; ellipses explicitly represent omitted layers. Eight recipient slots and two donor slots are separately editable. Constructor resets the layout; export_drawio.py preserves manual edits.",
   "canonical_source": "figs/fig1_teaser_overview.drawio",
   "raster_reference": "/home/fqwqf/.codex/generated_images/01a1a72e-e5a8-7f83-9788-7a0b74889c6a/exec-aea84382-7fcb-4f25-a1ba-836bb06b31ae.png",
   "semantic_audit": {
-    "scope": "Figure and caption versus supplied manuscript and supplementary methods; no implementation or external citation audit.",
+    "scope": "Figure, caption and panel reference versus supplied manuscript and supplementary methods/tables. No model implementation or raw-run audit; no reader study.",
     "supported": [
-      "Single-pass visual information reaches both prompt/marker and latent caches (sec/3_theory.tex, Proposition 2). Decode masking blocks only the depicted direct visual route.",
-      "Phase A performs no-grad H_raw rollout, then teacher-forced parallel replay to emit H_diff (sec/4_benchmark.tex, method_e6).",
-      "L=2K, and the four illustrated pairs show K=4; per-step ROI/color supervision is E6-A-specific.",
-      "Phase B receives Q and H_diff, has no original image tokens or reused Phase-A caches, and recomputes its caches.",
-      "Answer-loss gradients flow through H_diff without detach into Phase-A adaptation; they do not differentiate through the raw autoregressive rollout.",
-      "Caption ranges match E6-C and E6-A/B tables: eligible flips 96.88–100%, latent KV flips 0%; in-domain chain accuracy 72.67–83.33%; matched-window shifts 2.75–3.58; unseen-color flips 0–3.12%."
+      "Both prompt/marker and latent caches can depend on the image during prefill (sec/3_theory.tex:63; sec/X_suppl.tex, Proposition 2 proof). Both image-conditioning edges now appear in panel a; zero C2 flips are not treated as image-independence.",
+      "E6-C swaps all 28 KV layers on the E5 checkpoint in separate arms. Displayed C2 0.00% and C3a/b 96.88–100% are eligible-subset results (sec/5_experiments.tex:89–104). C3a recomputes M_end; C3b also transplants its KV (sec/X_suppl.tex).",
+      "The visible sheets are representative layers 1, 2, 28, with an explicit ellipsis; cache-position groups and sizes are schematic. Scope frames span the omitted layers as well as the visible sheets.",
+      "Phase A performs no-grad H_raw rollout followed by parallel teacher-forced replay; both receive V_T,Q,M_start and replay additionally receives H_raw (sec/4_benchmark.tex:20).",
+      "Phase B receives H_diff as input, with Q and markers, and reuses no original image tokens or Phase-A KV. New caches can depend on H_diff; no independent-of-H claim is made (sec/4_benchmark.tex:21).",
+      "Training answer-loss gradients reach replay through H_diff without detach, not the no-grad AR rollout (sec/4_benchmark.tex:20–21).",
+      "At evaluation, the donor window is interpolated as H_m(alpha)=(1-alpha)H_m+alpha H_prime_m; only the matching two slots change. K=4,m=2 are illustrative indices, and colors denote steps (sec/5_experiments.tex, fig:logit_curves; sec/X_suppl.tex, tab:s10_e6_interp)."
     ],
     "changes": [
-      "Compact double-lane composition restored to match the accepted raster reference",
-      "H_diff and no-detach transfer explicit; no-grad rollout is a short note, with full parallel-replay and gradient details in the caption",
-      "Lower lane illustrates E6-A step-wise ROI/color supervision; K=4 and schematic step colors clarified in caption",
-      "All four figures use black text; data marks and mechanism colors remain semantic"
+      "Separated the dependency map, 3D intervention scope and two-phase computation into panels a,b,c.",
+      "Restored explicit image conditioning of both cache partitions.",
+      "Restricted 3D to aligned layer sheets and the swap columns that span them; removed the unused channel axis and 28-line texture.",
+      "Replaced 3D forward-computation stacks with flat operators and made the no-grad rollout/replay sequence explicit.",
+      "Used a flat donor/recipient window comparison with an interpolation formula and unchanged-window note.",
+      "Rewrote the caption to match the displayed mechanism and updated the method panel reference."
     ],
     "manuscript_ambiguity": {
       "source": "sec/3_theory.tex, Proposition 3 condition (ii); sec/4_benchmark.tex, Phase B",
       "finding": "If M includes M_end after H_diff, KV_{Q,M}(Q) cannot generally denote independence from H_diff. M_end may attend to H_diff in the fresh sequence.",
       "impact": "This affects the stated cache dependency, not the absence of direct-image and reused Phase-A-cache routes. The figure makes only the latter claim.",
       "status": "Reported to user; theory prose and equations left unchanged."
+    },
+    "current_resolution": {
+      "previous_depiction_issues": "Addressed: missing V-to-latent conditioning, redundant KV-channel axis, dense layer texture, and conflation of 3D cache objects with forward computations.",
+      "evidence_limits": "Mechanism and displayed values are checked against the supplied paper. This does not establish experimental implementation correctness or reader-study validation.",
+      "remaining_manuscript_issue": "The previously reported M_end dependency ambiguity is unchanged outside the figure; the current figure asserts only no original image tokens or reused Phase-A KV."
     }
   },
   "design_qa": {
-    "reference": "exec-aea84382-7fcb-4f25-a1ba-836bb06b31ae.png",
     "canvas": [
       1800,
-      920
+      1155
     ],
     "text_color": "#000000",
-    "native_path_shape": "rounded skewed quadrilaterals using quadratic Bezier tangencies",
-    "shadows": "24 low-opacity native paths; no raster blur/filter",
-    "scientific_scope": "Matched to the paper and prior semantic audit; no experimental values altered"
+    "type_scale_design_px": {
+      "panel_titles": 34,
+      "body": 30,
+      "secondary": 28,
+      "minimum": 27
+    },
+    "native_path_shape": "Rounded planar stencils for KV sheets; flat native shapes for computations and slots",
+    "scientific_scope": "Current figure/caption checked against the paper and supplement; no experimental data altered.",
+    "verified": {
+      "main_pdf_images": 0,
+      "main_pdf_size_pt": [
+        0.0,
+        0.0,
+        495.0,
+        317.5730895996094
+      ],
+      "main_pdf_text_colors": [
+        0
+      ],
+      "representative_layers": [
+        1,
+        2,
+        28
+      ],
+      "omitted_layers_explicit": true,
+      "image_conditions_both_partitions": true,
+      "recipient_slots": 8,
+      "donor_slots": 2,
+      "paper_pages": 16,
+      "figure_page": 2,
+      "paper_nonblack_text_spans": 0,
+      "latex_overfull_warning": false,
+      "latex_warning": false
+    }
+  },
+  "prior_raster_prompt": "Redesign the attached scientific paper figure in a decisively contemporary visual language. The attached image is the EDIT TARGET and authoritative reference for topology and labels, NOT for appearance. The user explicitly dislikes its dated 1990s textbook/PowerPoint styling. Preserve all scientific meaning but substantially replace the visual treatment.\n\nOUTPUT: very crisp white-background landscape scientific figure, aspect ratio 2:1, ideally 3000 pixels wide or higher. Compact layout suitable for a two-column paper at 6.875 inches wide. TWO aligned horizontal lanes, (a) above and (b) below, with a quiet fine separator. No hero title, no poster framing, no card-dashboard layout.\n\nNEW DESIGN: refined modern editorial scientific illustration. Clean modern sans-serif typography resembling Inter or Helvetica Neue, regular/medium weight, charcoal #243444, NO serif text. Very shallow 2.5D physical representations with rounded edges, thin separated translucent-looking sheets and delicate ambient contact shadows. Render objects with smooth matte ceramic / frosted acrylic finish, not thick extruded parallelogram bricks. No dark contour outlines on 3D objects. No bevel borders, chrome, sketch texture, heavy gradient fills, or vintage clip art. Keep shape faces largely light and neutral, with soft cyan/teal #218F89 for visual tokens and the valid tape route, muted coral #DC856E for prefill relay, slate-blue #6784A6 for latent-cache layers. Strong high-contrast dark labels. Text floats frontally above or beside geometry and never tilts with the perspective. Connectors are precise thin flat vector-like lines with small arrowheads, smooth bends, consistent line weight and explicit endpoints. More polished and spacious locally, yet use the whole compact canvas. Change the silhouette and materials, not merely colors.\n\nEXACT TOPOLOGY:\n(a) label \"(a) Single-pass: prefill relay\". Left a fine 4x4 visual-token tile grid labeled \"Visual tokens\", tiles as tiny rounded low-profile chips. It has two paths into two separate compact horizontal layer stacks in the middle: upper coral \"Prompt / marker KV\", lower blue-gray \"Latent KV\". Each stack is depicted as 3 very thin separated sheets, with subtle depth and no thick sidewalls. Both stacks send rightward arrows into the same modest decoder representation on the right labeled \"Answer decoder\". The upper route is coral and labelled \"Prefill relay\". A separate light gray direct route arcs orthogonally above the two caches from Visual tokens toward Answer decoder, crossed by a small coral × and labelled \"Decode-time mask\". Do NOT cross out the latent-cache path. The diagram summarizes information routes rather than execution/token order.\n\n(b) label \"(b) Two-phase: isolated readout\". Left \"Phase A\" as a small plain typographic group label, NO pill badge. \"Image + question\" flows into a small restrained operation glyph labelled \"Parallel emission\". This sends a rightward arrow into an H ribbon labelled \"H: 2 slots per step\". Exactly EIGHT tiny rounded low-profile chips arranged horizontally in FOUR visibly separated PAIRS. Under pairs place \"1\", \"2\", \"3\", \"4\", with a minimal short bracket for each pair. Use four restrained chip tints to distinguish steps (teal, coral, blue-gray, sage); these are categorical step tags, not measured colors. Below each pair place one small ROI target swatch and exactly ONE short dashed vertical upward arrow from the swatch to that pair. No arrows from ROI swatches into Parallel emission. One thin grouping bracket beneath the swatches and the label \"Step-wise supervision (train)\".\nAfter the H tape place a thin vertical dashed isolation boundary labelled \"Fresh cache\". H crosses it via exactly one rightward arrow to a light modern decoder representation labelled \"Text decoder\" in the group \"Phase B\". Add an independent \"Question\" input below that decoder with a clear arrow into it. The Text decoder sends a short rightward arrow to \"Answers\". Under the boundary place a SMALL pale stack crossed by ×, labelled \"No image / A-cache\". No visual tokens and no Phase-A cache transfer across that boundary. H is the sole visual-information conduit.\n\nLABEL INVENTORY: All labels listed above, exactly once each; group indices 1,2,3,4. Do not add numbers, results, text paragraphs, slogans, equations, or acronym expansions. Prioritize readable type at final paper size, equal optical sizes, clean whitespace lanes for arrows, aligned module centers, and scientific correctness. The result should feel modern, precise and light, not cartoonish, not an app screenshot, not glossy corporate clip art.",
+  "design_specification": {
+    "canvas": [
+      1800,
+      1155
+    ],
+    "message": "A read-time image mask leaves image-conditioned caches; donor swaps must address cached states across layers. A fresh readout instead receives only the latent input tape as visual information, enabling a different intervention on two input slots.",
+    "reader_path": "(a) Trace both surviving cached routes. (b) Inspect the full-depth scope of the independent cache swaps. (c) Follow no-grad rollout, replay, tape input, and fresh readout; locate the evaluation-only two-slot intervention.",
+    "panel_a": "Flat dependency map with explicit V_T-to-prompt and V_T-to-latent edges, both cache-to-readout edges, and a crossed direct visual-read edge. It shows visual-information dependencies rather than a complete computation or attention graph.",
+    "panel_b": "Three exploded KV sheets at layers 1, 2 and 28. Dashed selection columns align one grouped cache partition across all layers; intermediate layers are marked by ellipses. C3a/b and C2 are separate donor swaps, with eligible flip rates 96.88–100% and 0.00%. No physical dimensions or channel counts are encoded.",
+    "panel_c": "Flat AR-rollout and parallel-replay operators each receive V_T,Q,M_start; H_raw goes from no-grad rollout into replay. H_diff is an eight-slot tape grouped into four step pairs. The matching donor pair modifies step 2 only through the displayed linear interpolation formula. H crosses a fresh-cache boundary, Q/markers enter independently, and the text readout recomputes every layer. Phase-A KV is discarded.",
+    "spatial_semantics": "Vertical separation in panel b denotes different transformer layers. Alignment denotes the same selected cache partition at those layers. Perspective exposes the separate sheets and the spanning selection. There is no unused KV-channel axis, and no 3D representation of computation in panel c.",
+    "training_vs_evaluation": "AR rollout is marked no grad. Answer-loss gradients through non-detached H_diff reach replay in training. The donor window is explicitly marked Eval; all other windows remain fixed.",
+    "palette": "Coral and blue consistently identify prompt/marker and latent cache partitions across panels a/b. Slot tints identify steps only. All text, including formulas and numerical results, is black.",
+    "caption": "sec/1_intro.tex, fig:teaser. The caption defines omitted layers, grouping, separate C3a/C3b variants, eligible rates, and the training/evaluation distinction. Method reference in sec/4_benchmark.tex points to panel c."
   }
 }
