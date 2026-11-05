@@ -1,111 +1,83 @@
 \section{Theoretical Framework}
 \label{sec:theory}
 
-We establish three exact mathematical propositions on nonlinear causal Transformers without relying on linear-superposition approximations, independent step-wise product assumptions ($p^K$), or degenerate conditional mutual information in deterministic networks. Complete step-by-step proofs are provided in Supplementary Appendix~\ref{app:proofs}.
+We formulate three exact structural propositions on nonlinear causal Transformers without relying on linear-superposition approximations, independent step-wise product assumptions ($p^K$), or degenerate conditional mutual information in deterministic networks (proofs in Supplementary Appendix~\ref{app:proofs}).
 
 \subsection{Causal Sequence and Potential Margin Formulation}
 \label{subsec:prelim}
 
-Let $\VT \in \mathbb{R}^{M \times d}$ denote the projected visual tokens and $Q \in \mathbb{R}^{T_q \times d}$ denote the prompt tokens. For a $K$-step relational query ($K \in \{2, 4\}$), the model outputs $K$ color predictions $Y = (Y_1, \dots, Y_K) \in \mathcal{A}^K$ with ground-truth labels $Y^* = (y_1^*, \dots, y_K^*)$. With latent reasoning enabled, the sequence follows the causal ordering:
+Let $\VT \in \mathbb{R}^{M \times d}$ denote projected visual tokens and $Q \in \mathbb{R}^{T_q \times d}$ prompt tokens. For a $K$-step query ($K \in \{2, 4\}$), the model outputs $Y = (Y_1, \dots, Y_K) \in \mathcal{A}^K$ with gold labels $Y^* = (y_1^*, \dots, y_K^*)$. With latent reasoning enabled, the single-pass sequence is $\mathrm{Seq} = [\VT,\, Q,\, \Mstart,\, H_{1:L},\, \Mend,\, Y_1, \dots, Y_K]$, where $\Mbdy = (\Mstart, \Mend)$ are boundary markers and $H_{1:L} = (h_1, \dots, h_L) \in \mathbb{R}^{L \times d}$ are continuous slot input vectors.
+For step $k \in \{1, \dots, K\}$, let $Y^*_{<k}$ denote the gold prefix and $\hat{Y}_{<k}(m, h)$ the greedy prefix under $(m, h)$, where $(\varnothing, \varnothing)$ is \texttt{NoLatent}, $(\Mbdy, 0)$ is \texttt{Zero-Slot} (or \texttt{Marker-only} at $L=0$), and $(\Mbdy, H)$ is \texttt{Native}. Under the conditioning event $\{C_1 = 1, \dots, C_{k-1} = 1\}$ of full-chain accuracy (and teacher-forced logit probing), $\hat{Y}_{<k}(m, h) = Y^*_{<k}$. Defining $\mathrm{logit}_k(c \mid \VT, Q, m, h)$ as the step-$k$ logit for color $c \in \mathcal{A}$, the \textbf{classification margin} of $y_k^*$ is:
 \begin{equation}
-  \mathrm{Seq} = \big[\, \VT,\; Q,\; \Mstart,\; H_{1:L},\; \Mend,\; Y_1, \dots, Y_K \,\big],
-  \label{eq:seq}
-\end{equation}
-where $\Mbdy = (\Mstart, \Mend)$ denotes the boundary markers and $H_{1:L} = (h_1, \dots, h_L) \in \mathbb{R}^{L \times d}$ denotes the continuous latent slot inputs.
-
-For step $k \in \{1, \dots, K\}$, let $Y^*_{<k}$ denote the gold prefix and $\hat{Y}_{<k}(m, h)$ denote the greedy prefix under configuration $(m, h)$, where $(\varnothing, \varnothing)$ denotes \texttt{NoLatent}, $(\Mbdy, 0)$ denotes \texttt{Zero-Slot} (or \texttt{Marker-only} when $L=0$), and $(\Mbdy, H)$ denotes \texttt{Native}. Under the chain-rule conditioning event $\{C_1 = 1, \dots, C_{k-1} = 1\}$ of full-chain accuracy (and teacher-forced logit probing), $\hat{Y}_{<k}(m, h) = Y^*_{<k}$. Defining $\mathrm{logit}_k(c \mid \VT, Q, m, h)$ as the step-$k$ output logit for candidate color $c \in \mathcal{A}$, the \textbf{classification margin} of the true label $y_k^*$ is:
-\begin{equation}
-\begin{aligned}
-  M_k(m, h) &\coloneqq \mathrm{logit}_k(y_k^* \mid \VT, Q, m, h) \\
-  &\quad - \max_{c \neq y_k^*} \mathrm{logit}_k(c \mid \VT, Q, m, h).
-\end{aligned}
-\label{eq:margin}
+  \resizebox{0.89\linewidth}{!}{$\displaystyle M_k(m, h) \coloneqq \mathrm{logit}_k(y_k^* \mid \VT, Q, m, h) - \max_{c \neq y_k^*} \mathrm{logit}_k(c \mid \VT, Q, m, h).$}
+  \label{eq:margin}
 \end{equation}
 Under greedy decoding, step-$k$ correctness is the indicator event $C_k(m, h) \coloneqq \mathbb{I}\{M_k(m, h) > 0\} \in \{0, 1\}$.
 
 \subsection{Proposition 1: Telescoping Margin Decomposition and Boundary-Crossing Identity}
 \label{subsec:prop1}
 
-Although multilayer Transformers are highly nonlinear, any function admits an exact \textbf{telescoping finite-difference identity} on the same instance $(\VT, Q)$:
+Although multilayer Transformers are nonlinear, any function admits an exact \textbf{telescoping finite-difference identity} on the same instance $(\VT, Q)$:
 \begin{equation}
   M_k(\Mbdy, H) \equiv M_k(\varnothing, \varnothing) + \Delta M_k^{\mathrm{bdy}} + \Delta M_k^{\mathrm{slot}}(H),
   \label{eq:telescope}
 \end{equation}
-where $\Delta M_k^{\mathrm{bdy}} \coloneqq M_k(\Mbdy, 0) - M_k(\varnothing, \varnothing)$ measures the margin shift from boundary markers alone, and $\Delta M_k^{\mathrm{slot}}(H) \coloneqq M_k(\Mbdy, H) - M_k(\Mbdy, 0)$ measures the shift from non-zero slot vectors $H$ relative to \texttt{Zero-Slot}. Note that $\mathbb{E}[\Delta M_k^{\mathrm{slot}}(H)] < 0$ does not automatically reduce accuracy; accuracy drops if and only if $\Delta M_k^{\mathrm{slot}}(H)$ pushes instances across $M_k = 0$.
+where $\Delta M_k^{\mathrm{bdy}} \coloneqq M_k(\Mbdy, 0) - M_k(\varnothing, \varnothing)$ is the shift from boundary markers with zeroed slot inputs, and $\Delta M_k^{\mathrm{slot}}(H) \coloneqq M_k(\Mbdy, H) - M_k(\Mbdy, 0)$ is the shift from non-zero slot inputs $H$ relative to \texttt{Zero-Slot}. Note that $\mathbb{E}[\Delta M_k^{\mathrm{slot}}(H)] < 0$ does not automatically reduce accuracy; accuracy drops if and only if $\Delta M_k^{\mathrm{slot}}(H)$ pushes instances across $M_k = 0$.
 
 \begin{proposition}[Boundary-Crossing Identity, Subset Inclusion, and Multi-Step Telescoping]
 \label{prop:margin}
 Let $C_k^{(0)} \coloneqq C_k(\Mbdy, 0)$ and $C_k^{(H)} \coloneqq C_k(\Mbdy, H)$. Without linearity or independence assumptions:
 \begin{enumerate}
-    \item \textbf{Single-Step Boundary-Crossing Identity:} The accuracy difference between \texttt{Zero-Slot} and \texttt{Native} equals the boundary-crossing degradation rate $\pi_k^-$ minus the rescue rate $\pi_k^+$:
-    \begin{equation}
-      \mathbb{P}(C_k^{(0)} = 1) - \mathbb{P}(C_k^{(H)} = 1) = \pi_k^- - \pi_k^+,
-      \label{eq:crossing}
-    \end{equation}
-    where $\pi_k^- \coloneqq \mathbb{P}(0 < M_k(\Mbdy, 0) \le -\Delta M_k^{\mathrm{slot}}(H))$ is the probability mass in the vulnerable band $(0, -\Delta M_k^{\mathrm{slot}}(H)]$ pulled below zero by non-zero slots, and $\pi_k^+ \coloneqq \mathbb{P}(0 \le -M_k(\Mbdy, 0) < \Delta M_k^{\mathrm{slot}}(H))$.
-    \item \textbf{Conditional Subset Inclusion (Reconciling E3-A and E3-C):} On the event $\{\Delta M_k^{\mathrm{slot}}(H) \le 0\}$, any instance succeeding under \texttt{Native} ($M_k(\Mbdy, 0) + \Delta M_k^{\mathrm{slot}}(H) > 0$) automatically satisfies $M_k(\Mbdy, 0) > 0$:
-    \begin{equation}
-      \mathbb{P}\big(C_k^{(0)} = 1 \;\big|\; C_k^{(H)} = 1,\; \Delta M_k^{\mathrm{slot}}(H) \le 0\big) \equiv 1.
-      \label{eq:subset_inclusion}
-    \end{equation}
-    Hence zeroing slots on pre-filtered subsets where $C_k^{(H)}=1$ (\texttt{E3-A}) preserves predictions with probability near $1$, whereas on the unfiltered population (\texttt{E3-C}) it rescues the entire vulnerable mass $\pi_k^- > 0$.
+    \item \textbf{Single-Step Boundary-Crossing Identity:} $\mathbb{P}(C_k^{(0)} = 1) - \mathbb{P}(C_k^{(H)} = 1) = \pi_k^- - \pi_k^+$, where $\pi_k^- \coloneqq \mathbb{P}(0 < M_k(\Mbdy, 0) \le -\Delta M_k^{\mathrm{slot}}(H))$ is the mass in $(0, -\Delta M_k^{\mathrm{slot}}(H)]$ pulled below zero by non-zero slot inputs, and $\pi_k^+ \coloneqq \mathbb{P}(0 \le -M_k(\Mbdy, 0) < \Delta M_k^{\mathrm{slot}}(H))$.
+    \item \textbf{Conditional Subset Inclusion (Reconciling E3-A and E3-C):} On $\{\Delta M_k^{\mathrm{slot}}(H) \le 0\}$, any instance succeeding under \texttt{Native} ($M_k(\Mbdy, 0) + \Delta M_k^{\mathrm{slot}}(H) > 0$) satisfies $M_k(\Mbdy, 0) > 0$, yielding $\mathbb{P}(C_k^{(0)} = 1 \mid C_k^{(H)} = 1, \Delta M_k^{\mathrm{slot}}(H) \le 0) \equiv 1$. Hence zeroing slot inputs on pre-filtered subsets where $C_k^{(H)}=1$ (\texttt{E3-A}) preserves predictions with probability near $1$, whereas on the unfiltered population (\texttt{E3-C}) it rescues the vulnerable mass $\pi_k^- > 0$.
     \item \textbf{Multi-Step Product Telescoping:} For full-chain accuracy $\mathrm{Acc}_{\mathrm{joint}}(K) = \mathbb{E}[\prod_{k=1}^K C_k]$ under arbitrary within-scene correlation $\mathrm{Cov}(C_j, C_k) > 0$:
     \begin{equation}
-    \begin{aligned}
-      &\mathrm{Acc}_{\mathrm{joint}}^{(0)}(K) - \mathrm{Acc}_{\mathrm{joint}}^{(H)}(K) \\
-      &\equiv \sum_{k=1}^K \mathbb{E}\!\left[ \Big(\prod_{j<k} C_j^{(0)}\Big) \big(C_k^{(0)} - C_k^{(H)}\big) \Big(\prod_{m>k} C_m^{(H)}\Big) \right]\!,
-    \end{aligned}
-    \label{eq:multistep_telescope}
+      \resizebox{0.89\linewidth}{!}{$\displaystyle \mathrm{Acc}_{\mathrm{joint}}^{(0)}(K) - \mathrm{Acc}_{\mathrm{joint}}^{(H)}(K) \equiv \sum_{k=1}^K \mathbb{E}\!\left[ \Big(\prod_{j<k} C_j^{(0)}\Big) \big(C_k^{(0)} - C_k^{(H)}\big) \Big(\prod_{m>k} C_m^{(H)}\Big) \right]\!,$}
+      \label{eq:multistep_telescope}
     \end{equation}
     and the joint error rate satisfies the Fr\'echet bounds $\max_k e_k \le 1 - \mathrm{Acc}_{\mathrm{joint}}(K) \le \min(1, \sum_{k=1}^K e_k)$, where $e_k = 1 - \mathbb{E}[C_k]$.
 \end{enumerate}
 \end{proposition}
 
-\textbf{Counterfactual Margin Shift.} For a counterfactual pair $(\Vorig, \Vrel)$ where target step $m$'s color changes from $a_m$ to $a_m'$, let $H(\alpha) = (1-\alpha)H(\Vorig) + \alpha H(\Vrel)$. We define the relative log-odds shift on fixed recipient context $\Vorig$ as:
+\textbf{Counterfactual Margin Shift.} For a counterfactual pair $(\Vorig, \Vrel)$ where target step $m$'s color changes from $a_m$ to $a_m'$, let $H(\alpha) = (1-\alpha)H(\Vorig) + \alpha H(\Vrel)$ (or its step-$m$ 2-slot interpolation). Under a fixed gold prefix $Y^*_{<m}$, the conditional relative log-odds shift on recipient context $\Vorig$ is:
 \begin{equation}
-\begin{aligned}
-  \delta M_m(\alpha) &\coloneqq \big[\mathrm{logit}_m(a_m' \mid \Vorig, H(\alpha)) \\
-  &\quad - \mathrm{logit}_m(a_m \mid \Vorig, H(\alpha))\big] - M_m(0),
-\end{aligned}
-\label{eq:delta_m}
+  \resizebox{0.89\linewidth}{!}{$\displaystyle \delta M_m(\alpha) \coloneqq \big[\mathrm{logit}_m(a_m' \mid \Vorig, H(\alpha)) - \mathrm{logit}_m(a_m \mid \Vorig, H(\alpha))\big] - M_m(0),$}
+  \label{eq:delta_m}
 \end{equation}
-where $M_m(0)$ is the baseline relative log-odds on $\Vorig$. Greedy output flips from $a_m$ to $a_m'$ only when $\delta M_m(\alpha) > -M_m(0)$.
+where $M_m(0)$ is the baseline relative log-odds between $a_m'$ and $a_m$ on $\Vorig$. Necessary (though not sufficient, due to competing colors $c \notin \{a_m, a_m'\}$) for greedy output to flip from $a_m$ to $a_m'$ is $\delta M_m(\alpha) > -M_m(0)$.
 
-\subsection{Proposition 2: Prefill KV Relay Confounding and Causal Separation}
+\subsection{Proposition 2: Prefill KV Relay Confounding and Cache-Level Causal Separation}
 \label{subsec:prop2}
 
-In a deterministic network where $H = f_\theta(\VT, Q)$, conditional entropy $H(H \mid \VT, Q) = 0$, so statistical conditional mutual information $I(Y; H \mid \VT, Q) \equiv 0$ regardless of causal reliance. We therefore formulate pathway separation via structural causal models (SCMs)~\cite{geiger2021causal}.
+In a deterministic network where $H = f_\theta(\VT, Q)$, conditional entropy $H(H \mid \VT, Q) = 0$, so statistical conditional mutual information $I(Y; H \mid \VT, Q) \equiv 0$ regardless of causal reliance. We therefore analyze pathway confounding via structural causal models (SCMs)~\cite{geiger2021causal}.
 
-\begin{proposition}[Prefill KV Relay Confounding and Double Dissociation Criterion]
+\begin{proposition}[Prefill KV Relay Confounding and Cache-Level Intervention Criterion]
 \label{prop:bypass}
-In a $D$-layer ($D \ge 2$) causal Transformer on $\mathrm{Seq} = [\VT, Q, \Mstart, H_{1:L}, \Mend, Y]$, answer decoding is governed by three KV-cache groups:
+In a $D$-layer ($D \ge 2$) causal Transformer on $\mathrm{Seq} = [\VT, Q, \Mstart, H_{1:L}, \Mend, Y]$, answer decoding is governed by three all-layer KV-cache partitions:
 \begin{equation}
-  Y = g_\theta\big(\, m_{\mathrm{vis}} \odot \KV_V(\VT),\; \KV_{Q,M}(\VT, Q),\; \KV_H(H_{1:L}) \,\big),
+  \resizebox{0.88\linewidth}{!}{$\displaystyle Y = g_\theta\big(\, m_{\mathrm{vis}} \odot \KV_V(\VT),\; \KV_{Q,M}(\VT, Q),\; \KV_H(\VT, Q, H_{1:L}) \,\big),$}
   \label{eq:scm}
 \end{equation}
-where $m_{\mathrm{vis}} \in \{0, 1\}$ controls answer-to-vision attention and $\KV_{Q,M}$ denotes non-visual prompt/marker caches.
+where $m_{\mathrm{vis}} \in \{0, 1\}$ controls whether answer tokens (and $\Mend$) attend to visual keys $\KV_V(\VT)$, $\KV_{Q,M}$ denotes non-visual prompt/marker caches, and $\KV_H$ denotes the all-layer KV caches at the latent slot positions.
 \begin{enumerate}
-    \item \textbf{Prefill Visual Relay ($P_2$):} Because $Q$ and $\Mstart$ follow $\VT$ in $\mathrm{Seq}$, layer-1 self-attention computes $h_Q^{(1)}$ from $\VT$, making $\KV_{Q,M}^{(\ell)}(\VT, Q)$ an entangled function of $(\VT, Q)$ for all layers $\ell \ge 2$. Setting $m_{\mathrm{vis}} = 0$ (\texttt{Vision-Masked} decoding) blocks only the direct path $P_1$ ($\VT \to \KV_V \to Y$), leaving open both the prefill relay $P_2$ ($\VT \to \KV_{Q,M}(\VT, Q) \to Y$) and the latent path $P_3$ ($\VT \to \KV_H \to Y$).
-    \item \textbf{Identification via Double Dissociation:} Under $m_{\mathrm{vis}} = 0$, let $\tau_{\mathrm{lat}}(0)$ be the target flip rate under $\Do(\KV_H \leftarrow \KV_H(\Vrel))$ with $\KV_{Q,M}(\Vorig, Q)$ fixed, $\tau_{\mathrm{relay}}(0)$ be the flip rate under $\Do(\KV_{Q,M} \leftarrow \KV_{Q,M}(\Vrel, Q))$ with $\KV_H(\Vorig)$ fixed, and $\Delta_{\mathrm{zero}}(0)$ be the accuracy drop under $\Do(H_{1:L} \leftarrow 0)$. If $\mathbb{P}(Y_{\mathrm{mask}} = Y^*) \gg 0$ while $\tau_{\mathrm{lat}}(0) = 0$, $\Delta_{\mathrm{zero}}(0) \le 0$, and $\tau_{\mathrm{relay}}(0) \approx \tau_{\mathrm{total}}(0)$, visual competence under $m_{\mathrm{vis}}=0$ is routed exclusively via $P_2$ ($\KV_{Q,M}$). Notably, $\Delta_{\mathrm{zero}}(0) \le 0$ rules out even nonlinear AND-gate interactions between $P_2$ and $P_3$, since $g_\theta(0, \KV_{Q,M}(\VT, Q), 0)$ retains full cross-image discriminability with its third argument fixed to $0$.
+    \item \textbf{Dual Non-identifiability of Decoding-Time Masking and Input-Vector Zeroing:} Because both $Q \cup \{\Mstart\}$ and the latent slot positions $H_{1:L}$ follow $\VT$ in $\mathrm{Seq}$, causal self-attention across layers $\ell = 1, \dots, D$ allows both partitions to attend to $\VT$. Thus, for $\ell \ge 2$, $\KV_{Q,M}^{(\ell)}(\VT, Q)$ depends on $(\VT, Q)$, and \textbf{even when slot input vectors are zeroed ($H_{1:L} \leftarrow 0$), the recomputed slot caches $\KV_H^{(\ell)}(\VT, Q, 0)$ still depend on $(\VT, Q)$ via causal attention to preceding visual and prompt tokens}. Setting $m_{\mathrm{vis}} = 0$ (\texttt{Vision-Masked}) and/or intervening only on input vectors $H_{1:L}$ (\texttt{Arm C1} or \texttt{Zero-Patch}) cannot algebraically rule out visual routing through either $\KV_{Q,M}(\VT, Q)$ or $\KV_H(\VT, Q, \cdot)$.
+    \item \textbf{Cache-Level Separation via Direct KV Interventions (\texttt{E6-C}):} Under $m_{\mathrm{vis}} = 0$, let $\tau_{\mathrm{lat}}^{\mathrm{KV}}(0)$ be the flip rate when directly swapping all $D$ layers of latent caches $\Do(\KV_H \leftarrow \KV_H(\Vrel, Q, H(\Vrel)))$ with $\KV_{Q,M}(\Vorig, Q)$ fixed (\texttt{Arm C2}), and $\tau_{\mathrm{relay}}^{\mathrm{KV}}(0)$ be the flip rate when swapping $\Do(\KV_{Q,M} \leftarrow \KV_{Q,M}(\Vrel, Q))$ with $\KV_H(\Vorig, Q, H(\Vorig))$ fixed (\texttt{Arms C3a/b}). Because a nonlinear decoder $g_\theta(0, \KV_{Q,M}, \KV_H)$ may depend on the joint configuration of both partitions, $\tau_{\mathrm{lat}}^{\mathrm{KV}}(0) = 0$ does not logically entail $\tau_{\mathrm{relay}}^{\mathrm{KV}}(0) = 100\%$. However, if empirically $\tau_{\mathrm{lat}}^{\mathrm{KV}}(0) = 0$ while $\tau_{\mathrm{relay}}^{\mathrm{KV}}(0)$ matches the all-visible donor flip rate and blinding $\KV_{Q,M}$ via a black prefill image $\Do(\KV_{Q,M} \leftarrow \KV_{Q,M}(\Vzero, Q))$ while retaining $\KV_H(\Vorig, Q, H(\Vorig))$ (\texttt{Arm C4}) collapses accuracy, these interventions jointly establish that $m_{\mathrm{vis}}=0$ predictions are driven predominantly by the prefill relay $\KV_{Q,M}(\VT, Q)$.
 \end{enumerate}
 \end{proposition}
 
-\subsection{Proposition 3: Exact Equivalence Under Full Prefill-and-Decode Visual Isolation}
+\subsection{Proposition 3: Interface Equivalence Under Full Prefill-and-Decode Visual Isolation}
 \label{subsec:prop3}
 
-\begin{proposition}[Exact Counterfactual Equivalence Under Full Visual Isolation]
+\begin{proposition}[Interface Counterfactual Equivalence Under Full Visual Isolation]
 \label{prop:isolation}
-Suppose answer decoding satisfies \textbf{Full Prefill-and-Decode Visual Isolation}:
-(i) direct visual attention is blocked ($m_{\mathrm{vis}} = 0$);
-(ii) non-latent text/marker caches visible to the decoder are strictly image-free, $\KV_{Q,M}(\Vorig, Q) = \KV_{Q,M}(\Vrel, Q) = \KV_{Q,M}(Q)$ (e.g., decoding from $\mathrm{Seq}_B = [Q, \Mstart, H_{1:L}, \Mend, Y]$ without $\VT$ or Phase-A caches); and
-(iii) donor intervention substitutes $H_{1:L} \leftarrow H(\Vrel, Q)$ without re-attending to $\Vorig$.
-Then for any model $g_\theta$ and any same-question pair $(\Vorig, \Vrel)$, the donor-intervened output on $\Vorig$ is sample-by-sample identical to the direct output on $\Vrel$:
+Following the visual-isolation principle of LIVR~\cite{li2026livr} and CVRR~\cite{park2026cvrr}, suppose answer readout satisfies \textbf{Full Prefill-and-Decode Visual Isolation}:
+(i) direct visual attention is absent ($m_{\mathrm{vis}} = 0$);
+(ii) non-latent text/marker caches visible to the decoder are strictly image-free, $\KV_{Q,M}(\Vorig, Q) = \KV_{Q,M}(\Vrel, Q) = \KV_{Q,M}(Q)$ (decoding from $\mathrm{Seq}_B = [Q, \Mstart, H_{1:L}, \Mend, Y]$ without $\VT$ or Phase-A caches); and
+(iii) whole-span donor intervention substitutes $H_{1:L} \leftarrow H(\Vrel, Q)$ in $\mathrm{Seq}_B$, so that the recomputed slot cache is $\KV_H(Q, H(\Vrel, Q))$ without re-attending to $\Vorig$.
+Then for any deterministic model $g_\theta$ and same-question pair $(\Vorig, \Vrel)$, whole-span donor intervention on $\Vorig$ is sample-by-sample identical to direct evaluation on $\Vrel$:
 \begin{equation}
-\begin{aligned}
-  &Y\big(\Vorig, Q, \Do(H \leftarrow H(\Vrel, Q))\big) \\
-  &= g_\theta\big(0,\, \KV_{Q,M}(Q),\, \KV_H(H(\Vrel, Q))\big) \equiv Y(\Vrel, Q),
-\end{aligned}
-\label{eq:exact_equiv}
+  \resizebox{0.89\linewidth}{!}{$\displaystyle Y\big(\Vorig, Q, \Do(H \leftarrow H(\Vrel, Q))\big) = g_\theta\big(0,\, \KV_{Q,M}(Q),\, \KV_H(Q, H(\Vrel, Q))\big) \equiv Y(\Vrel, Q),$}
+  \label{eq:exact_equiv}
 \end{equation}
-guaranteeing exact equality between latent-mediated and total input counterfactual effects: $\tau_{\mathrm{lat}} \equiv \tau_{\mathrm{total}}(\Vorig \to \Vrel)$.
+making whole-span latent substitution equal to the direct input counterfactual effect ($\tau_{\mathrm{lat}}^{\mathrm{all}} \equiv \tau_{\mathrm{total}}(\Vorig \to \Vrel)$) as an interface consistency property for any model (\texttt{E6-A} or \texttt{E6-B}). Whether the model achieves high accuracy, counterfactual sensitivity $\tau_{\mathrm{total}} > 0$, and step-wise modularity must be tested empirically via overall accuracy, direct accuracy on $\Vrel$, and matched vs.\ unmatched sub-window interventions.
 \end{proposition}

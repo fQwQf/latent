@@ -7,6 +7,10 @@
 \usepackage{amsthm}
 \usepackage{mathtools}
 \usepackage{booktabs}
+\usepackage{colortbl}
+% Consistent semantic accents for results and visual comparisons.
+\definecolor{resulttint}{HTML}{EAF4F1}
+\definecolor{baselinetint}{HTML}{F1F3F4}
 \usepackage{array}
 \usepackage{tabularx}
 \usepackage{caption}
@@ -15,27 +19,27 @@
 \usepackage[numbers,sort&compress]{natbib}
 
 % Caption and float spacing matched to official CVPR density
-\captionsetup[table]{position=above, skip=3pt, font=small}
-\captionsetup[figure]{position=below, skip=3pt, font=small}
-\setlength{\textfloatsep}{7pt plus 2pt minus 2pt}
-\setlength{\floatsep}{5pt plus 2pt minus 2pt}
-\setlength{\intextsep}{5pt plus 2pt minus 2pt}
-\setlength{\dbltextfloatsep}{8pt plus 2pt minus 2pt}
-\setlength{\dblfloatsep}{6pt plus 2pt minus 2pt}
+\captionsetup[table]{position=above, skip=2.5pt, font=small}
+\captionsetup[figure]{position=below, skip=2.5pt, font=small}
+\setlength{\textfloatsep}{5pt plus 1.5pt minus 1.5pt}
+\setlength{\floatsep}{4pt plus 1.5pt minus 1.5pt}
+\setlength{\intextsep}{4pt plus 1.5pt minus 1.5pt}
+\setlength{\dbltextfloatsep}{6pt plus 1.5pt minus 1.5pt}
+\setlength{\dblfloatsep}{5pt plus 1.5pt minus 1.5pt}
 
 % Compact list spacing without enumitem dependency
 \makeatletter
 \def\@listi{\leftmargin\leftmargini
             \parsep 0pt
-            \topsep 2pt plus 1pt minus 1pt
-            \itemsep 1pt plus 1pt minus 0.5pt}
+            \topsep 1.5pt plus 1pt minus 0.5pt
+            \itemsep 0.8pt plus 0.5pt minus 0.4pt}
 \let\@listI\@listi
 \@listi
 \makeatother
 
 % Theorem and Proposition environments with compact spacing
-\newtheoremstyle{cvprplain}{3.5pt}{3.5pt}{\itshape}{}{\bfseries}{.}{0.4em}{}
-\newtheoremstyle{cvprdef}{3.5pt}{3.5pt}{\normalfont}{}{\bfseries}{.}{0.4em}{}
+\newtheoremstyle{cvprplain}{2.8pt}{2.8pt}{\itshape}{}{\bfseries}{.}{0.35em}{}
+\newtheoremstyle{cvprdef}{2.8pt}{2.8pt}{\normalfont}{}{\bfseries}{.}{0.35em}{}
 \theoremstyle{cvprplain}
 \newtheorem{proposition}{Proposition}
 \newtheorem{theorem}{Theorem}
@@ -56,9 +60,13 @@
 \newcommand{\Vrel}{V_{\mathrm{rel}}}
 \newcommand{\Virrel}{V_{\mathrm{irrel}}}
 \newcommand{\Vrand}{V_{\mathrm{rand}}}
+\newcommand{\Vzero}{V_{\mathrm{zero}}}
 \newcommand{\Mbdy}{M_{\mathrm{bdy}}}
 \newcommand{\Mstart}{M_{\mathrm{start}}}
 \newcommand{\Mend}{M_{\mathrm{end}}}
 \newcommand{\KV}{\mathrm{KV}}
 \newcommand{\Do}{\mathrm{do}}
 \newcommand{\ci}[2]{\,\text{\scriptsize $[#1,#2]$}}
+
+% Keep all manuscript text, including review line numbers, black.
+\renewcommand\linenumberfont{\normalfont\tiny\sffamily\color{black}}

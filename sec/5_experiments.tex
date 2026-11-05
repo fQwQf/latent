@@ -6,9 +6,9 @@ We conduct a four-stage causal audit across six experimental modules (\texttt{Pi
 \subsection{Single-Hop Neutrality vs.\ Multi-Step Destructive Slot Interference (\texttt{Pilot}, \texttt{E1}, \texttt{E3-C})}
 \label{subsec:exp_e3c}
 
-\textbf{Single-Hop Pilot Audit.} Across $991$ public single-hop examples in TreeBench~\cite{treebench2025} ($400$), HR-Bench 4K/8K~\cite{wang2024hrbench} ($400$), and V*Bench~\cite{wu2024vstar} ($191$), native \texttt{LVR-7B} ($L \in \{4, 8, 16\}$) achieves $48.51\%$--$48.81\%$ weighted accuracy, matching \texttt{NoLatent} ($48.76\%$), slot zeroing ($H \leftarrow 0$, $48.81\%$), and Gaussian noise ($48.56\%$), whereas decoding-time \texttt{Vision-Mask} drops accuracy to $28.61\%$ (Supplementary Table~S1), consistent with single-hop non-portability~\cite{guo2026beyond}.
+\textbf{Single-Hop Public Benchmarks (\texttt{Pilot}).} Across $991$ public single-hop examples in TreeBench~\cite{treebench2025} ($400$), HR-Bench 4K/8K~\cite{wang2024hrbench} ($400$), and V*Bench~\cite{wu2024vstar} ($191$), native \texttt{LVR-7B} ($L \in \{4, 8, 16\}$) achieves $48.51\%$--$48.81\%$ weighted accuracy, matching \texttt{NoLatent} ($48.76\%$), slot zeroing ($H \leftarrow 0$, $48.81\%$), and Gaussian noise ($48.56\%$), whereas decoding-time \texttt{Vision-Mask} drops accuracy to $28.61\%$ (Supplementary Table~S1), consistent with single-hop non-portability~\cite{guo2026beyond}.
 
-\begin{table*}[t]
+\begin{table*}[!t]
   \caption{\textbf{Multi-Step Component Dissociation on 150 Frozen Evaluation Scene Clusters (\texttt{E1} \& \texttt{E3-C}, $9,600$ Runs).} Full-chain exact-match accuracy ($\%$) and $K=4$ per-position mean accuracy ($\%$) / linear position slope (pp/step), with $95\%$ cluster bootstrap intervals. Boundary markers alone (\texttt{Marker-only}) are neutral relative to \texttt{NoLatent}, whereas non-zero slot vectors (\texttt{Native}) induce $-10.33$pp to $-20.00$pp degradation that is $100\%$ eliminated by zeroing the slot inputs (\texttt{Zero-Slot}).}
   \label{tab:e3c}
   \centering
@@ -19,47 +19,50 @@ We conduct a four-stage causal audit across six experimental modules (\texttt{Pi
     \cmidrule(lr){2-5} \cmidrule(lr){6-7}
     \textbf{Strategy / Intervention Arm} & \textbf{$K=2$ Indep.} & \textbf{$K=2$ Serial} & \textbf{$K=4$ Indep.} & \textbf{$K=4$ Serial} & \textbf{$K=4$ Indep.} & \textbf{$K=4$ Serial} \\
     \midrule
-    1. \texttt{NoLatent} (\texttt{LVR-L0\_off}) & $76.00\ci{70.00}{82.33}$ & $\mathbf{73.67}\ci{66.67}{80.33}$ & $30.67\ci{24.00}{37.67}$ & $35.00\ci{27.67}{42.00}$ & $68.67 / {-6.53}$ & $71.50 / {-5.33}$ \\
-    2. \texttt{Marker-only} ($L=0$, intact markers) & $76.33\ci{70.00}{82.33}$ & $73.33\ci{66.66}{79.67}$ & $31.33\ci{24.33}{38.33}$ & $34.33\ci{27.00}{41.67}$ & $68.58 / {-6.03}$ & $70.42 / {-4.77}$ \\
-    3. \texttt{Native} $L=4$ & $64.00\ci{57.00}{70.67}$ & $63.00\ci{56.33}{69.67}$ & $18.00\ci{13.00}{23.33}$ & $21.00\ci{15.33}{27.00}$ & $58.58 / {-3.83}$ & $61.33 / {-2.07}$ \\
-    4. \texttt{Native} $L=8$ & $56.33\ci{49.00}{63.34}$ & $57.00\ci{49.67}{64.00}$ & $19.00\ci{13.67}{24.33}$ & $24.33\ci{18.67}{30.33}$ & $61.00 / {-2.80}$ & $63.92 / {-1.10}$ \\
-    5. \texttt{Zero-Slot} $L=4$ (intact markers, $H\leftarrow 0$) & $\mathbf{77.00}\ci{71.00}{83.00}$ & $73.33\ci{66.33}{79.67}$ & $32.67\ci{25.67}{39.67}$ & $\mathbf{36.33}\ci{29.33}{43.67}$ & $\mathbf{68.83} / {-7.00}$ & $\mathbf{72.08} / {-5.77}$ \\
-    6. \texttt{Zero-Slot} $L=8$ (intact markers, $H\leftarrow 0$) & $76.33\ci{70.00}{82.33}$ & $72.33\ci{65.67}{79.00}$ & $\mathbf{33.33}\ci{26.33}{40.33}$ & $\mathbf{36.33}\ci{29.00}{43.67}$ & $68.67 / {-7.53}$ & $72.00 / {-6.93}$ \\
-    7. \texttt{Zero-Marker} $L=4$ ($M_{\mathrm{bdy}}\leftarrow 0$, native $H$) & $64.33\ci{57.33}{71.33}$ & $62.67\ci{55.67}{69.33}$ & $19.00\ci{14.00}{24.00}$ & $21.00\ci{15.67}{26.67}$ & $59.00 / {-3.87}$ & $61.83 / {-2.27}$ \\
-    8. \texttt{Zero-Marker} $L=8$ ($M_{\mathrm{bdy}}\leftarrow 0$, native $H$) & $56.33\ci{49.33}{63.33}$ & $57.00\ci{50.00}{64.00}$ & $19.67\ci{14.33}{25.00}$ & $25.33\ci{19.33}{31.67}$ & $61.92 / {-3.37}$ & $65.00 / {-0.73}$ \\
+    \texttt{NoLatent} & $76.00\ci{70.00}{82.33}$ & $\mathbf{73.67}\ci{66.67}{80.33}$ & $30.67\ci{24.00}{37.67}$ & $35.00\ci{27.67}{42.00}$ & $68.67 / {-6.53}$ & $71.50 / {-5.33}$ \\
+    \texttt{Marker-only} ($L=0$) & $76.33\ci{70.00}{82.33}$ & $73.33\ci{66.66}{79.67}$ & $31.33\ci{24.33}{38.33}$ & $34.33\ci{27.00}{41.67}$ & $68.58 / {-6.03}$ & $70.42 / {-4.77}$ \\
+    \texttt{Native} $L=4$ & $64.00\ci{57.00}{70.67}$ & $63.00\ci{56.33}{69.67}$ & $18.00\ci{13.00}{23.33}$ & $21.00\ci{15.33}{27.00}$ & $58.58 / {-3.83}$ & $61.33 / {-2.07}$ \\
+    \texttt{Native} $L=8$ & $56.33\ci{49.00}{63.34}$ & $57.00\ci{49.67}{64.00}$ & $19.00\ci{13.67}{24.33}$ & $24.33\ci{18.67}{30.33}$ & $61.00 / {-2.80}$ & $63.92 / {-1.10}$ \\
+    \rowcolor{resulttint}
+    \texttt{Zero-Slot} $L=4$ & $\mathbf{77.00}\ci{71.00}{83.00}$ & $73.33\ci{66.33}{79.67}$ & $32.67\ci{25.67}{39.67}$ & $\mathbf{36.33}\ci{29.33}{43.67}$ & $\mathbf{68.83} / {-7.00}$ & $\mathbf{72.08} / {-5.77}$ \\
+    \rowcolor{resulttint}
+    \texttt{Zero-Slot} $L=8$ & $76.33\ci{70.00}{82.33}$ & $72.33\ci{65.67}{79.00}$ & $\mathbf{33.33}\ci{26.33}{40.33}$ & $\mathbf{36.33}\ci{29.00}{43.67}$ & $68.67 / {-7.53}$ & $72.00 / {-6.93}$ \\
+    \texttt{Zero-Marker} $L=4$ & $64.33\ci{57.33}{71.33}$ & $62.67\ci{55.67}{69.33}$ & $19.00\ci{14.00}{24.00}$ & $21.00\ci{15.67}{26.67}$ & $59.00 / {-3.87}$ & $61.83 / {-2.27}$ \\
+    \texttt{Zero-Marker} $L=8$ & $56.33\ci{49.33}{63.33}$ & $57.00\ci{50.00}{64.00}$ & $19.67\ci{14.33}{25.00}$ & $25.33\ci{19.33}{31.67}$ & $61.92 / {-3.37}$ & $65.00 / {-0.73}$ \\
     \midrule
-    \textbf{Paired Contrast:} \texttt{Marker-only} $-$ \texttt{NoLatent} & $+0.33\ci{0.00}{1.00}$ & $-0.33\ci{-2.00}{1.33}$ & $+0.67\ci{-0.67}{2.00}$ & $-0.67\ci{-2.00}{0.67}$ & \multicolumn{2}{c}{Boundary markers are neutral} \\
-    \textbf{Paired Contrast:} \texttt{Zero-Slot} $L=4$ $-$ \texttt{Native} $L=4$ & $\mathbf{+13.00}\ci{6.67}{19.33}$ & $\mathbf{+10.33}\ci{4.00}{16.67}$ & $\mathbf{+14.67}\ci{8.67}{20.67}$ & $\mathbf{+15.33}\ci{10.00}{20.67}$ & \multicolumn{2}{c}{$100\%$ recovery via slot zeroing} \\
-    \textbf{Paired Contrast:} \texttt{Zero-Slot} $L=8$ $-$ \texttt{Native} $L=8$ & $\mathbf{+20.00}\ci{12.67}{27.33}$ & $\mathbf{+15.33}\ci{8.67}{22.33}$ & $\mathbf{+14.33}\ci{8.67}{20.33}$ & $\mathbf{+12.00}\ci{6.67}{17.33}$ & \multicolumn{2}{c}{$100\%$ recovery via slot zeroing} \\
+    \texttt{Marker-only} $-$ \texttt{NoLatent} & $+0.33\ci{0.00}{1.00}$ & $-0.33\ci{-2.00}{1.33}$ & $+0.67\ci{-0.67}{2.00}$ & $-0.67\ci{-2.00}{0.67}$ & \multicolumn{2}{c}{Markers neutral; \texttt{Zero-Slot} $L{=}8{-}\text{Nat}{=}+12.0\text{--}20.0$pp} \\
+    \texttt{Zero-Slot} $-$ \texttt{Native} ($L=4$) & $\mathbf{+13.00}\ci{6.67}{19.33}$ & $\mathbf{+10.33}\ci{4.00}{16.67}$ & $\mathbf{+14.67}\ci{8.67}{20.67}$ & $\mathbf{+15.33}\ci{10.00}{20.67}$ & \multicolumn{2}{c}{$100\%$ recovery via slot zeroing} \\
     \bottomrule
   \end{tabular}%
   }
 \end{table*}
 
-\begin{figure}[t]
+\begin{figure}[!t]
   \centering
   \includegraphics[width=\linewidth]{figs/fig2_e3c_slot_interference.pdf}
-  \caption{\textbf{Multi-Step Destructive Slot Interference (\texttt{E3-C}).} \textbf{(a)} Full-chain accuracy across 150 frozen evaluation clusters. \textbf{(b)} Paired cluster-bootstrap differences confirm that boundary markers are neutral ($\pm 0.67$pp), whereas zeroing non-zero latent slots (\texttt{Zero-Slot} minus \texttt{Native}) yields $+10.33$pp to $+20.00$pp gains.}
+  \caption{\textbf{Multi-Step Destructive Slot Interference (\texttt{E3-C}).} \textbf{(a)} Full-chain accuracy across 150 frozen evaluation clusters. \textbf{(b)} Paired cluster-bootstrap differences with $95\%$ intervals for $L=4$: boundary markers are neutral, whereas \texttt{Zero-Slot} minus \texttt{Native} yields $+10.33$pp to $+15.33$pp gains. Panel (a) includes all eight arms; gains reach $+20.00$pp at $L=8$.}
   \label{fig:e3c}
 \end{figure}
 
-\textbf{8-Arm Multi-Step Dissociation (\texttt{E1} \& \texttt{E3-C}).} On 2-step and 4-step relational chains across the $150$ frozen evaluation clusters ($9,600$ runs; \cref{tab:e3c} and \cref{fig:e3c}), single-hop neutrality gives way to severe degradation. Under \texttt{NoLatent}, $K=4$ independent and serial chain accuracies are $30.67\%$ and $35.00\%$ (where the serial per-position mean $\bar{p}=71.50\%$ exceeds naive $\bar{p}^4 = 26.13\%$ due to positive within-scene correlation $\mathrm{Cov}(C_j, C_k) > 0$, as modeled in Proposition~\ref{prop:margin}). Enabling native rollouts ($L=4, 8$) lowers per-position accuracy by $\pi_k^- - \pi_k^+ \approx 10.1$pp ($71.50\% \to 61.33\%$ on $K=4$ serial), compounding via Eq.~\eqref{eq:multistep_telescope} into a $10.67$pp to $19.67$pp drop in full-chain accuracy ($35.00\% \to 21.00\%$ on $K=4$ serial; $76.00\% \to 56.33\%$ on $K=2$ independent with $L=8$).
+\textbf{8-Arm Multi-Step Dissociation (\texttt{E1} \& \texttt{E3-C}).} On 2-step and 4-step relational queries across the $150$ frozen clusters ($9,600$ runs; \cref{tab:e3c} and \cref{fig:e3c}), native rollouts exhibit severe negative transfer. Under \texttt{NoLatent}, $K=4$ independent and serial chain accuracies are $30.67\%$ and $35.00\%$ (where the serial position mean $\bar{p}=71.50\%$ exceeds $\bar{p}^4 = 26.13\%$ due to positive within-scene correlation $\mathrm{Cov}(C_j, C_k) > 0$, Proposition~\ref{prop:margin}; the serial-vs-independent interaction $I_{\mathrm{fixed}} = -2.67\ci{-9.33}{4.00}$pp spans zero). Enabling native rollouts ($L=4, 8$) lowers per-position accuracy by $\pi_k^- - \pi_k^+ \approx 10.1$pp ($71.50\% \to 61.33\%$ on $K=4$ serial), compounding via Eq.~\eqref{eq:multistep_telescope} into a $10.67$pp to $19.67$pp full-chain drop ($35.00\% \to 21.00\%$ on $K=4$ serial; $76.00\% \to 56.33\%$ on $K=2$ independent with $L=8$).
 
-\Cref{tab:e3c} pinpoints the exact cause:
+\Cref{tab:e3c} pinpoints the mechanism on $K \in \{2, 4\}$:
 (i) \texttt{Marker-only} ($L=0$) matches \texttt{NoLatent} within $\pm 0.67$pp across all four conditions;
 (ii) zeroing marker embeddings while keeping native slots (\texttt{Zero-Marker}) leaves accuracy depressed at $19.00\%$--$25.33\%$ on $K=4$; and
-(iii) zeroing the continuous slot vectors under intact markers (\texttt{Zero-Slot} $L=4, 8$) rebounds full-chain accuracy by $\mathbf{+10.33}$\textbf{pp to }$\mathbf{+20.00}$\textbf{pp}, recovering $100\%$ of \texttt{NoLatent} accuracy ($36.33\%$ vs.\ $35.00\%$ on $K=4$ serial). This validates Proposition~\ref{prop:margin}: uncalibrated non-zero slot vectors inject negative margin shifts $\Delta M_k^{\mathrm{slot}}(H) < 0$.
+(iii) zeroing the continuous slot input vectors under intact markers (\texttt{Zero-Slot} $L=4, 8$) rebounds full-chain accuracy by $\mathbf{+10.33}$\textbf{pp to }$\mathbf{+20.00}$\textbf{pp}, recovering $100\%$ of \texttt{NoLatent} accuracy ($36.33\%$ vs.\ $35.00\%$ on $K=4$ serial). Because public single-hop benchmarks (\texttt{Pilot}) and our composited/recolored COCO scenes (\texttt{E3-C}) come from different domains (where $K=1$ was evaluated only under \texttt{NoLatent} for position calibration), isolating hop count $K$ from scene domain requires a same-scene $K=1$ 8-arm control (\cref{sec:conclusion}).
 
 \subsection{Input Sensitivity vs.\ Zero Readout (\texttt{E2-A}, \texttt{E3-A/B})}
 \label{subsec:exp_e3b}
 
-\textbf{Input Sensitivity (\texttt{E2-A}) vs.\ Donor Swap (\texttt{E3-A}).} Across the $87$ pixel-level counterfactual pairs ($3,192$ \texttt{E2-A} runs), recoloring the step-$m$ target ($\Vrel$) flips native \texttt{LVR-7B} predictions to $a_m'$ on $61.90\%$--$64.29\%$ ($K=2$) and $69.77\%$--$72.09\%$ ($K=4$) of pairs ($0.00\%$ false flips on $\Virrel$) and shifts the latent trajectory by $\|\Delta H\|_2 = 69.25$ (Supplementary Table~S2). Yet across $15,484$ \texttt{E3-A} runs ($384$ doubly eligible donor injections), patching $H(\Vrel)$ into $\Vorig$ (\texttt{Donor-All}, \texttt{WinEarly/Late}, \texttt{NormMatched}) yields \textbf{$0.00\%$} target flips ($95\%$ upper bound $\le 0.78\%$, TOST $p < 0.0001$; Supplementary Table~S3), while \texttt{Zero-Patch} on this pre-filtered $C_k^{(H)}=1$ subset retains the original answer on $95.35\%$--$98.86\%$ of instances, confirming Eq.~\eqref{eq:subset_inclusion}.
+\textbf{Input Sensitivity (\texttt{E2-A}) vs.\ Donor Swap (\texttt{E3-A}).} Across the $87$ pixel-level counterfactual pairs ($3,192$ \texttt{E2-A} runs), recoloring the step-$m$ target ($\Vrel$) flips native \texttt{LVR-7B} predictions to $a_m'$ on $61.90\%$--$64.29\%$ ($K=2$) and $69.77\%$--$72.09\%$ ($K=4$) of pairs ($0.00\%$ false flips on $\Virrel$) and shifts the latent trajectory by $\|\Delta H\|_2 = 69.25$ (Supplementary Table~S2). Yet across $15,484$ \texttt{E3-A} runs ($384$ doubly eligible donor injections), patching $H(\Vrel)$ into $\Vorig$ (\texttt{Donor-All}, \texttt{WinEarly/Late}, \texttt{NormMatched}) yields \textbf{$0.00\%$} target flips ($95\%$ upper bound $\le 0.78\%$, TOST $p < 0.0001$; Supplementary Table~S3), while \texttt{Zero-Patch} on this pre-filtered $C_k^{(H)}=1$ subset retains the original answer on $95.35\%$--$98.86\%$ of instances, consistent with Proposition~\ref{prop:margin}.
 
-\begin{table}[t]
-  \caption{\textbf{Local Visual Patch Swap Positive Control vs.\ ROI-Masked Latent Injection (\texttt{E3-B1}) and Logit Shift (\texttt{E3-B2}, $19,152$ Runs).} Target-step net directional transfer (pp) on Full / Position-Eligible / Chain-Eligible subsets, and full-set log-odds shift $\delta M(1)$ (Unmasked / Vision-Masked).}
+\begin{table*}[!t]
+  \caption{\textbf{Local Visual Patch Swap Positive Control vs.\ ROI-Masked Latent Injection (\texttt{E3-B1}) and Logit Shift (\texttt{E3-B2}, $19,152$ Runs).} Target-step net directional transfer (pp) on Full / Position-Eligible / Chain-Eligible subsets, and full-set conditional log-odds shift $\delta M(1)$ (Unmasked / Vision-Masked).}
   \label{tab:e3b}
   \centering
-  \resizebox{\linewidth}{!}{%
+  \small
+  \setlength{\tabcolsep}{4pt}
+  \renewcommand{\arraystretch}{1.08}
   \begin{tabular}{l c c c}
     \toprule
     \textbf{Cond.} & \textbf{Pos.\ Control: Visual Patch} & \textbf{ROI-Masked Latent} & \textbf{Logit Shift $\delta M(1)$} \\
@@ -72,107 +75,106 @@ We conduct a four-stage causal audit across six experimental modules (\texttt{Pi
     $(4, 8)$  & $+46.7 / \mathbf{+90.5} / \mathbf{+91.9}$ & $-0.7 / {-0.8} / \mathbf{\phantom{+}0.0}$ & $-0.015 / {-0.011}$ \\
     $(4, 16)$ & $+49.4 / \mathbf{+85.5} / \mathbf{+86.7}$ & $-0.8 / {-1.3} / \mathbf{\phantom{+}0.0}$ & $-0.026 / {-0.021}$ \\
     \bottomrule
-  \end{tabular}%
-  }
-\end{table}
+  \end{tabular}
+\end{table*}
 
-\textbf{Positive Control (\texttt{E3-B1}) and Logit Probing (\texttt{E3-B2}).} Across $19,152$ runs on the $266$ paired records (\cref{tab:e3b}), keeping $H(\Vorig)$ fixed and replacing only the visual tokens inside the target bounding box (\texttt{Visual Patch Swap}) flips \textbf{$83.93\%$--$93.75\%$} of eligible instances ($42.71\%$--$53.66\%$ full set). Conversely, masking those target-ROI visual keys during text decoding and injecting $H(\Vrel)$ yields near-zero net transfer ($-2.44$pp to $+2.56$pp; $0.00\%$ on all $K=4$ chain-eligible sets), and 8-point linear interpolation $\alpha \in [0, 2]$ (\texttt{E3-B2}) yields flat/negative log-odds shifts across all $12$ conditions ($\delta M(1) \in [-0.0949, -0.0109]$; \cref{fig:logit_curves}).
+\textbf{Positive Control (\texttt{E3-B1}) and Logit Probing (\texttt{E3-B2}).} Across $19,152$ runs on the $266$ paired records (\cref{tab:e3b}), keeping $H(\Vorig)$ fixed and replacing only the visual tokens inside the target bounding box (\texttt{Visual Patch Swap}) flips \textbf{$83.93\%$--$93.75\%$} of eligible instances ($42.71\%$--$53.66\%$ full set). Conversely, masking those target-ROI visual keys during text decoding and injecting $H(\Vrel)$ yields near-zero net transfer ($-2.44$pp to $+2.56$pp; $0.00\%$ on all $K=4$ chain-eligible sets), and 8-point linear interpolation $\alpha \in [0, 2]$ (\texttt{E3-B2}) yields flat/negative conditional log-odds shifts across all $12$ conditions ($\delta M(1) \in [-0.0949, -0.0109]$; \cref{fig:logit_curves}).
 
-\subsection{The Dual-Bypass Trap and 28-Layer KV Double Dissociation (\texttt{E5} \& \texttt{E6-C})}
+\subsection{Decoding-Masked Adaptation and 28-Layer KV Double Dissociation (\texttt{E5} \& \texttt{E6-C})}
 \label{subsec:exp_e5_e6c}
 
-\textbf{Eliminating Interference Without Awakening Slots (\texttt{E5}).} Adapting \texttt{LVR-7B} on the $40$ dev training clusters ($2$ epochs, $160$ updates) with step-wise ROI alignment, $0.1\times$ 8-color CE, and $60\%$ decoding-time vision masking ($m_{\mathrm{vis}}=0$, $\mathrm{TBPTT}=1$) eliminates slot interference on the $150$ evaluation clusters ($K=4$ serial jumps by $\mathbf{+49.00}$\textbf{pp} to $70.00\%$; $K=4$ independent by $\mathbf{+51.67}$\textbf{pp} to $70.67\%$, matching adapted \texttt{NoLatent} at $70.00\%$), while \texttt{Vision-Masked} accuracy surges from ${\sim}3\%$ to \textbf{$82.33\%$--$85.33\%$} ($K=2$) and \textbf{$67.00\%$--$69.67\%$} ($K=4$; Supplementary Table~S7). Yet across $20,482$ post-adaptation \texttt{E3-A} runs, donor latent transfer under both unmasked and \texttt{Vision-Masked} decoding remains strictly \textbf{$0.00\%\ci{0.00}{0.00}$} (and zeroing slots under \texttt{Vision-Masked} slightly raises accuracy by $+0.65$ to $+2.34$pp; Supplementary Table~S6).
+\textbf{Eliminating Interference Without Awakening Slots (\texttt{E5}).} Adapting \texttt{LVR-7B} on the $40$ dev training clusters ($2$ epochs, $160$ updates) with step-wise ROI alignment, $0.1\times$ 8-color CE, and $60\%$ decoding-time vision masking ($m_{\mathrm{vis}}=0$, $\mathrm{TBPTT}=1$) eliminates slot interference on the $150$ evaluation clusters ($K=4$ serial jumps by $\mathbf{+49.00}$\textbf{pp} to $70.00\%$; $K=4$ independent by $\mathbf{+51.67}$\textbf{pp} to $70.67\%$, matching adapted \texttt{NoLatent} at $70.00\%$), while \texttt{Vision-Masked} accuracy surges from ${\sim}3\%$ to \textbf{$82.33\%$--$85.33\%$} ($K=2$) and \textbf{$67.00\%$--$69.67\%$} ($K=4$; Supplementary Table~S7). Yet across $20,482$ post-adaptation \texttt{E3-A} runs, donor latent transfer under both unmasked and \texttt{Vision-Masked} decoding remains \textbf{$0.00\%\ci{0.00}{0.00}$} (and zeroing slot inputs under \texttt{Vision-Masked} slightly raises accuracy by $+0.65$ to $+2.34$pp; Supplementary Table~S6).
 
-\begin{table}[t]
-  \caption{\textbf{28-Layer KV-Cache Double Dissociation on the \texttt{E5} Checkpoint Under \texttt{Vision-Masked} Decoding (\texttt{E6-C}).} Swapping 28-layer latent caches ($\KV_H$, Arm C2) yields $0.00\%$ flips, whereas swapping prefill prompt/marker caches ($\KV_{Q,M}$, Arms C3a/b) yields $96.88\%$--$100.00\%$ flips on eligible subsets. Blinding prefill caches (Arm C4) drops masked accuracy by $64.00$--$73.00$pp.}
+\begin{table*}[!t]
+  \caption{\textbf{28-Layer KV-Cache Double Dissociation on the \texttt{E5} Checkpoint Under \texttt{Vision-Masked} Decoding (\texttt{E6-C}).} Target-position flip rates ($\%$) across $266$ counterfactual records. Swapping 28-layer latent caches ($\KV_H$, Arm C2) yields $0.00\%$ flips, whereas swapping prefill prompt/marker caches ($\KV_{Q,M}$, Arms C3a/b) yields $96.88\%$--$100.00\%$ flips on eligible subsets ($16.46\%$--$40.23\%$ full set, matching the all-visible donor reference). Blinding prefill caches (Arm C4) on the 150 frozen clusters drops masked accuracy by $64.00$--$73.00$pp.}
   \label{tab:e6c}
   \centering
-  \resizebox{\linewidth}{!}{%
-  \begin{tabular}{l c c c c}
+  \small
+  \setlength{\tabcolsep}{4pt}
+  \renewcommand{\arraystretch}{1.08}
+  \begin{tabular}{l c c c c c}
     \toprule
-    \textbf{Subset / Task} & \textbf{C1: Tape} & \textbf{C2: 28-L} & \textbf{C3a: Prompt} & \textbf{C3b: All Text} \\
-    (Records / Clusters) & $H$ \textbf{Swap} & $\KV_H$ \textbf{Swap} & $\KV_{Q,\mathrm{start}}$ & $\KV_{Q,\mathrm{mkr}}$ \\
+    \textbf{Subset / Task} & \textbf{C1: Tape} & \textbf{C2: 28-L} & \textbf{C3a: Prompt} & \textbf{C3b: All Text} & \textbf{All-Vis.} \\
+    (Records / Clusters) & $H$ \textbf{Swap} & $\KV_H$ \textbf{Swap} & $\KV_{Q,\mathrm{start}}$ & $\KV_{Q,\mathrm{mkr}}$ & \textbf{Donor Ref.} \\
     \midrule
-    $K=2$ Full ($92/41$)    & $0.00$ & $0.00$ & $\mathbf{16.46}$ & $\mathbf{16.46}$ \\
-    $K=2$ Pos.\ ($17/9$)    & $0.00$ & $0.00$ & $\mathbf{100.00}$ & $\mathbf{100.00}$ \\
-    $K=2$ Chain ($17/9$)    & $0.00$ & $0.00$ & $\mathbf{100.00}$ & $\mathbf{100.00}$ \\
+    $K=2$ Full ($92/41$)    & $0.00$ & $0.00$ & $\mathbf{16.46}$ & $\mathbf{16.46}$ & $16.46$ \\
+    $K=2$ Pos/Chn ($17/9$)  & $0.00$ & $0.00$ & $\mathbf{100.00}$ & $\mathbf{100.00}$ & $100.00$ \\
+    $K=4$ Full ($174/64$)   & $0.00$ & $0.00$ & $\mathbf{40.23}$ & $39.19$ & $39.58$ \\
+    $K=4$ Pos.\ ($73/32$)   & $0.00$ & $0.00$ & $\mathbf{96.88}$ & $\mathbf{96.88}$ & $100.00$ \\
+    $K=4$ Chain ($63/27$)   & $0.00$ & $0.00$ & $\mathbf{100.00}$ & $\mathbf{100.00}$ & $100.00$ \\
     \midrule
-    $K=4$ Full ($174/64$)   & $0.00$ & $0.00$ & $\mathbf{40.23}$ & $39.19$ \\
-    $K=4$ Pos.\ ($73/32$)   & $0.00$ & $0.00$ & $\mathbf{96.88}$ & $\mathbf{96.88}$ \\
-    $K=4$ Chain ($63/27$)   & $0.00$ & $0.00$ & $\mathbf{100.00}$ & $\mathbf{100.00}$ \\
-    \midrule
-    \multicolumn{5}{l}{\textbf{Arm C4: Blind-Prefill Accuracy Drop on 150 Frozen Clusters ($\mathrm{Self} - \mathrm{C4}$)}} \\
-    \multicolumn{5}{l}{$K=2$ Serial: $84.67\% \to 12.67\%$ ($\mathbf{-72.00\text{pp}}$); Indep.: $85.33\% \to 12.33\%$ ($\mathbf{-73.00\text{pp}}$)} \\
-    \multicolumn{5}{l}{$K=4$ Serial: $69.67\% \to \phantom{0}3.33\%$ ($\mathbf{-66.33\text{pp}}$); Indep.: $67.33\% \to \phantom{0}3.33\%$ ($\mathbf{-64.00\text{pp}}$)} \\
+    \multicolumn{6}{l}{\textbf{C4 Blind Prefill (150 Clust.):} $K{=}2$ S/I $\mathbf{-72.0 / {-73.0}\text{pp}}$; $K{=}4$ S/I $\mathbf{-66.3 / {-64.0}\text{pp}}$} \\
     \bottomrule
-  \end{tabular}%
-  }
-\end{table}
+  \end{tabular}
+\end{table*}
 
-\begin{figure}[t]
+\begin{figure}[!t]
   \centering
   \includegraphics[width=\linewidth]{figs/fig3_e6c_double_dissociation.pdf}
-  \caption{\textbf{Causal Double Dissociation (\texttt{E6-C}) and Full-Isolation Awakening (\texttt{E6-2}).} \textbf{(a)} Under \texttt{E5} \texttt{Vision-Masked} decoding, swapping 28-layer $\KV_H$ caches yields $0.0\%$ flips, whereas swapping prefill $\KV_{Q,M}$ caches yields $96.9\%$--$100.0\%$ flips. \textbf{(b)} Under strict image-free Phase B, step-aligned sub-windows (\texttt{E6-A}) achieve $72.7\%$--$83.3\%$ chain accuracy ($+63.7$ to $+69.0$pp over shared-prototype \texttt{E6-B}).}
+  \caption{\textbf{Cache-Level Double Dissociation (\texttt{E6-C}) and Strict Phase-B In-Domain Accuracy (\texttt{E6-2}).} \textbf{(a)} Under \texttt{E5} \texttt{Vision-Masked} decoding, swapping 28-layer $\KV_H$ caches yields $0.0\%$ flips, whereas swapping prefill $\KV_{Q,M}$ caches flips $96.9\%$--$100.0\%$ of eligible pairs ($40.2\%$ full set). \textbf{(b)} Under strict image-free Phase B on the 150 frozen clusters, step-aligned sub-windows (\texttt{E6-A}) achieve $72.7\%$--$83.3\%$ chain accuracy ($+63.7$ to $+69.0$pp over shared-prototype \texttt{E6-B}).}
   \label{fig:e6c}
 \end{figure}
 
-\textbf{28-Layer KV Double Dissociation (\texttt{E6-C}).} Four cache-intervention arms on the \texttt{E5} checkpoint under \texttt{Vision-Masked} decoding (\cref{tab:e6c} and \cref{fig:e6c}a) directly confirm Proposition~\ref{prop:bypass}: replacing all 28 layers of latent slot caches $\KV_H$ (\texttt{Arm C2}) yields \textbf{$0.00\%$} flips, whereas holding $\KV_H(\Vorig)$ fixed and swapping only the prefill prompt/start-marker caches $\KV_{Q,\mathrm{start}}(\Vrel)$ (\texttt{Arm C3a}) flips \textbf{$100.00\%$} of $K=2$ and $K=4$ chain-eligible pairs ($96.88\%$ position-eligible; $16.46\%$ and $40.23\%$ full set). Moreover, feeding a black image to prefill $\KV_{Q,M}$ while keeping the real image's 28-layer $\KV_H(\VT)$ (\texttt{Arm C4}) collapses \texttt{Vision-Masked} accuracy by $\mathbf{64.00}$\textbf{pp to }$\mathbf{73.00}$\textbf{pp} ($69.67\% \to 3.33\%$ on $K=4$ serial), proving that decoding-time vision masking routes $100\%$ of visual answers through the prefill prompt relay ($P_2$).
+\textbf{28-Layer KV Double Dissociation (\texttt{E6-C}).} Because zeroing input vectors $H_{1:L} \leftarrow 0$ does not stop slot positions from attending to $\VT$ across layers (Proposition~\ref{prop:bypass}), we run four cache-level arms on \texttt{E5} under a unified post-$\Mend$ \texttt{Vision-Masked} readout (\cref{tab:e6c} and \cref{fig:e6c}a, where $\Mend$ also masks image keys): swapping all 28 layers of latent caches $\KV_H$ (\texttt{Arm C2}) yields \textbf{$0.00\%$} flips, whereas holding $\KV_H(\Vorig)$ fixed and swapping prefill caches $\KV_{Q,\mathrm{start}}(\Vrel)$ (\texttt{Arm C3a}) or $\KV_{Q,\mathrm{mkr}}(\Vrel)$ (\texttt{Arm C3b}) flips \textbf{$100.00\%$} of $K=2$ and $K=4$ chain-eligible pairs ($96.88\%$ position-eligible; $16.46\%$ and $39.19\%$--$40.23\%$ full set, matching the $16.46\%$ and $39.58\%$ all-visible donor reference). Feeding a black image to prefill $\KV_{Q,M}$ while keeping the real image's 28-layer $\KV_H(\VT)$ (\texttt{Arm C4}) drops \texttt{Vision-Masked} accuracy on the $150$ clusters by $\mathbf{64.00}$\textbf{pp to }$\mathbf{73.00}$\textbf{pp} ($69.67\% \to 3.33\%$ on $K=4$ serial), confirming that decoding-masked adaptation routes visual answers predominantly via $\KV_{Q,M}$.
 
-\subsection{Full-Isolation Awakening and Sub-Window Localization (\texttt{E6-A} vs.\ \texttt{E6-B})}
+\subsection{Strict Phase-B Readout, Conditional Logit Shifts, and the Unseen-Color Barrier (\texttt{E6-A/B})}
 \label{subsec:exp_e6ab}
 
-\textbf{Pure-Latent Multi-Step Accuracy (\texttt{E6-2}).} We trained \texttt{E6-A} (step-aligned 2-slot sub-windows) and \texttt{E6-B} (shared global ROI prototype control) for $4$ epochs ($320$ updates) on the $40$ dev training clusters under the Two-Phase Strict Interface (\cref{subsec:method_e6}), selecting checkpoints by 10-scene dev Phase-B answer CE (\texttt{epoch\_4} for \texttt{E6-A}, CE $0.114$; \texttt{epoch\_1} for \texttt{E6-B}, CE $0.248$). As shown in \cref{tab:e6_acc} and \cref{fig:e6c}b, under strict image-free Phase-B evaluation on the $150$ frozen clusters, native \texttt{LVR-7B} ($0.00\%$--$2.33\%$) and \texttt{E5} ($3.33\%$--$9.67\%$) fail, and shared-prototype \texttt{E6-B} stalls at $15.00\%$--$18.33\%$ ($K=2$) and $6.33\%$--$6.67\%$ ($K=4$). In contrast, \textbf{\texttt{E6-A} achieves $82.00\%$ ($K=2$ serial), $83.33\%$ ($K=2$ indep.), $72.67\%$ ($K=4$ serial, position mean $90.25\%$), and $75.67\%$ ($K=4$ indep., position mean $91.33\%$)} solely via the $L=2K$ latent vectors, outperforming \texttt{E6-B} by $\mathbf{+63.67}$\textbf{pp to }$\mathbf{+69.00}$\textbf{pp}, with slot zeroing dropping accuracy by $\mathbf{80.49}$\textbf{pp--}$\mathbf{81.25}$\textbf{pp} (\texttt{E6-3c}).
+\textbf{In-Domain Multi-Step Accuracy on 150 Clusters (\texttt{E6-2}).} We trained \texttt{E6-A} (step-aligned 2-slot sub-windows) and \texttt{E6-B} (shared global ROI prototype control) for $4$ epochs ($320$ updates) on the $40$ dev training clusters under the Two-Phase Strict Interface (\cref{subsec:method_e6}), selecting checkpoints by 10-scene dev Phase-B answer CE (\texttt{epoch\_4} for \texttt{E6-A}, CE $0.114$; \texttt{epoch\_1} for \texttt{E6-B}, CE $0.248$). On the $150$ frozen clusters under Strict Phase B (\cref{tab:e6_acc} and \cref{fig:e6c}b), untrained interface transfer of native \texttt{LVR-7B} ($0.00\%$--$2.33\%$) and \texttt{E5} ($3.33\%$--$9.67\%$) fails, and shared-prototype \texttt{E6-B} stalls at $15.00\%$--$18.33\%$ ($K=2$) and $6.33\%$--$6.67\%$ ($K=4$). In contrast, \textbf{\texttt{E6-A} achieves $82.00\%$ ($K=2$ serial), $83.33\%$ ($K=2$ indep.), $72.67\%$ ($K=4$ serial, position mean $90.25\%$), and $75.67\%$ ($K=4$ indep., position mean $91.33\%$)}, outperforming \texttt{E6-B} by $\mathbf{+63.67}$\textbf{pp to }$\mathbf{+69.00}$\textbf{pp}.
 
-\begin{table}[t]
-  \caption{\textbf{Strict Image-Free Phase-B Multi-Step Accuracy on 150 Frozen Clusters (\texttt{E6-2}) and Counterfactual Slot-Zeroing Drop (\texttt{E6-3c}).} All visual tokens $\VT$ and Phase-A KV caches are absent in Phase B.}
+\begin{table*}[!t]
+  \caption{\textbf{Strict Image-Free Phase-B Multi-Step Accuracy on the 150 Frozen Evaluation Clusters (\texttt{E6-2a}, $300$ Queries/Cond.).} All visual tokens $\VT$ and Phase-A KV caches are absent in Phase B. Native \texttt{LVR-7B} and \texttt{E5} were not trained on Phase B and serve as interface-transfer controls ($^\dagger$).}
   \label{tab:e6_acc}
   \centering
-  \resizebox{\linewidth}{!}{%
+  \small
+  \setlength{\tabcolsep}{4pt}
+  \renewcommand{\arraystretch}{1.08}
   \begin{tabular}{l c c c c c}
     \toprule
-    & \multicolumn{2}{c}{\textbf{$K=2$ Chain (\%)}} & \multicolumn{2}{c}{\textbf{$K=4$ Chain (\%)}} & \textbf{Zero Drop} \\
+    & \multicolumn{2}{c}{\textbf{$K=2$ Chain (\%)}} & \multicolumn{2}{c}{\textbf{$K=4$ Chain / Pos (\%)}} & \textbf{$K=4$ Slope} \\
     \cmidrule(lr){2-3} \cmidrule(lr){4-5}
-    \textbf{Model (Strict Phase B)} & \textbf{Serial} & \textbf{Indep.} & \textbf{Serial} & \textbf{Indep.} & $(K{=}2 / K{=}4)$ \\
+    \textbf{Model (Strict Phase B)} & \textbf{Serial} & \textbf{Indep.} & \textbf{Serial} & \textbf{Indep.} & \textbf{(S / I, pp)} \\
     \midrule
-    Native \texttt{LVR-7B} & $2.33$ & $1.33$ & $0.00$ & $0.00$ & $-13.4 / {-7.8}$ \\
-    \texttt{E5} (Decode Mask Only) & $9.67$ & $9.67$ & $3.33$ & $4.67$ & $\phantom{+}0.0 / +2.3$ \\
-    \texttt{E6-B} (Shared Prototype) & $18.33$ & $15.00$ & $6.33$ & $6.67$ & $+1.2 / \phantom{+}0.0$ \\
-    \textbf{\texttt{E6-A} (Step Sub-Windows)} & $\mathbf{82.00}$ & $\mathbf{83.33}$ & $\mathbf{72.67}$ & $\mathbf{75.67}$ & $\mathbf{+80.5} / \mathbf{+81.3}$ \\
+    Native \texttt{LVR-7B}$^\dagger$ & $2.33$ & $1.33$ & $0.00 / 13.9$ & $0.00 / 13.0$ & $-2.2 / {-2.5}$ \\
+    \texttt{E5} (Decode Mask)$^\dagger$ & $9.67$ & $9.67$ & $3.33 / 30.8$ & $4.67 / 32.2$ & $-2.1 / {-0.2}$ \\
+    \texttt{E6-B} (Shared Proto) & $18.33$ & $15.00$ & $6.33 / 31.7$ & $6.67 / 31.2$ & $-0.2 / {-0.6}$ \\
+    \rowcolor{resulttint}
+    \textbf{\texttt{E6-A} (Step Windows)} & $\mathbf{82.00}$ & $\mathbf{83.33}$ & $\mathbf{72.67} / \mathbf{90.3}$ & $\mathbf{75.67} / \mathbf{91.3}$ & $-3.5 / {-2.3}$ \\
     \midrule
-    \textbf{Paired Gain ($\texttt{E6-A} - \texttt{E6-B}$)} & $\mathbf{+63.67}$ & $\mathbf{+68.33}$ & $\mathbf{+66.33}$ & $\mathbf{+69.00}$ & — \\
+    \textbf{Paired $\texttt{E6-A} - \texttt{E6-B}$} & $\mathbf{+63.67}$ & $\mathbf{+68.33}$ & $\mathbf{+66.33}$ & $\mathbf{+69.00}$ & — \\
     \bottomrule
-  \end{tabular}%
-  }
-\end{table}
+  \end{tabular}
+\end{table*}
 
-\begin{figure}[t]
+\begin{figure*}[!t]
   \centering
-  \includegraphics[width=\linewidth]{figs/fig4_e6_logit_interpolation.pdf}
-  \caption{\textbf{Continuous Interpolation Logit Shift $\delta M(\alpha)$ Across All 266 Counterfactual Pairs (\texttt{E6-4e} vs.\ \texttt{E3-B2}).} While native \texttt{LVR-7B} and shared-prototype \texttt{E6-B} remain flat at zero, \texttt{E6-A} drives a monotonic positive log-odds shift ($+3.58$ on $K=2$, $+2.76$ on $K=4$ at $\alpha=1$). Interpolating \emph{only the 2 slots of the edited step} (dashed navy curve) recovers $100.0\%$ ($K=2$) and $99.6\%$ ($K=4$) of the full-tape shift.}
+  \includegraphics[width=\textwidth]{figs/fig4_e6_logit_interpolation.pdf}
+  \caption{\textbf{Conditional Interpolation Logit Shift $\delta M(\alpha)$ Across All 266 Counterfactual Pairs (\texttt{E6-4e} vs.\ \texttt{E3-B2}).} While native \texttt{LVR-7B} and shared-prototype \texttt{E6-B} remain flat near zero, \texttt{E6-A} drives a monotonic positive conditional log-odds shift ($+3.58$ on $K=2$, $+2.76$ on $K=4$ at $\alpha=1$). Interpolating \emph{only the 2 slots of the edited step} (dashed navy curve) matches the full-tape conditional shift on the edited step ($+3.58$ on $K=2$, $+2.75$ on $K=4$). Both panels use the same vertical scale. Shading shows full-tape $95\%$ cluster-bootstrap intervals; error bars at $\alpha=1$ show matched-window intervals. Native curves use unmasked $L=4$ ($K=2$) and $L=8$ ($K=4$) readout.}
   \label{fig:logit_curves}
-\end{figure}
+\end{figure*}
 
-\begin{table}[t]
-  \caption{\textbf{Sub-Window Causal Localization and Logit Interpolation Across 266 Counterfactual Pairs (\texttt{E6-3} \& \texttt{E6-4}).} Full-tape ($2K$ slots) vs.\ step-matched 2-slot window (\texttt{Win-Matched}) log-odds slopes and shifts $\delta M(\alpha)$, plus free-generation flip rates (\texttt{Win-Matched} vs.\ \texttt{Win-Unmatched}).}
+\begin{table*}[!t]
+  \caption{\textbf{Counterfactual Evaluation on the 266 Recolored Pairs Across Readout Interfaces and Subsets (\texttt{E6-3} \& \texttt{E6-4}; Target Recolored from \texttt{Red/Green} to Held-Out \texttt{Yellow/Brown}).} Each cell reports $K{=}2$ ($92/41$ full) $|$ $K{=}4$ ($174/64$ full). Native/\texttt{E5} use single-stage \texttt{Vision-Masked} (\texttt{C1}); \texttt{E6-B/A} use Strict Phase B.}
   \label{tab:e6_subwin}
   \centering
-  \resizebox{\linewidth}{!}{%
-  \begin{tabular}{l c c c c}
+  \resizebox{\textwidth}{!}{%
+  \begin{tabular}{l l c c c c}
     \toprule
-    \textbf{Model / Subset} & \textbf{Slope (Full /} & \textbf{$\delta M(1)$ (Full /} & \textbf{$\delta M(2)$ (Full /} & \textbf{Free Flip (\%)} \\
-    & \textbf{2-Slot Win)} & \textbf{2-Slot Win)} & \textbf{2-Slot Win)} & \textbf{(Match / Unm.)} \\
+    \textbf{Model / Subset} & \textbf{Readout} & \textbf{Direct $\Vorig / \Vrel$} & \textbf{Zero Drop} & \textbf{$\delta M(1)$ Full/Win} & \textbf{Flip Match/Unm.} \\
+    ($K{=}2 \;|\; K{=}4$ Rec:Cl) & \textbf{Interface} & ($K{=}2 \;|\; K{=}4$ \%) & ($K{=}2|4$ pp) & ($K{=}2 \;|\; K{=}4$) & ($K{=}2 \;|\; K{=}4$ \%) \\
     \midrule
-    \texttt{E6-A} $K{=}2$ Full & $+3.65 / \mathbf{+3.65}$ & $+3.58 / \mathbf{+3.58}$ & $+6.75 / \mathbf{+6.73}$ & $\phantom{00}0.0 / 0.0$ \\
-    \texttt{E6-A} $K{=}4$ Full & $+2.55 / \mathbf{+2.53}$ & $+2.76 / \mathbf{+2.75}$ & $+4.76 / \mathbf{+4.72}$ & $\phantom{00}\mathbf{3.1} / 0.0$ \\
-    \texttt{E6-A} $K{=}4$ Elig.\ & $+1.92 / \mathbf{+2.00}$ & $+2.39 / \mathbf{+2.47}$ & $+3.70 / \mathbf{+3.85}$ & $\mathbf{100.0} / 0.0$ \\
+    Nat.\ Full ($92{:}41|174{:}64$) & 1-Stg \texttt{C1} & $62.8/68.9 \;|\; 66.0/59.2$ & $-13.4 | {-7.8}$ & $-0.07 \;|\; {-0.01}$ & $1.2/\text{—} \;|\; 0.3/\text{—}$ \\
+    \texttt{E5} Full ($92{:}41|174{:}64$)  & 1-Stg \texttt{C1} & $92.7/16.5 \;|\; 95.3/41.1$ & $\phantom{+}0.0 | +2.3$ & $\text{—}$ & $0.0/\text{—} \;|\; 0.0/\text{—}$ \\
     \midrule
-    \texttt{E6-B} $K{=}2$ Full & $+0.01 / +0.01$ & $+0.01 / +0.01$ & $+0.03 / +0.02$ & $\phantom{00}0.0 / 0.0$ \\
-    \texttt{E6-B} $K{=}4$ Full & $+0.01 / {-0.00}$ & $+0.01 / \phantom{+}0.00$ & $+0.01 / {-0.00}$ & $\phantom{00}0.0 / 0.0$ \\
+    \texttt{E6-B} Full ($92{:}41|174{:}64$)& Strict PhB & $37.8/\phantom{0}0.0 \;|\; 30.2/\phantom{0}0.0$ & $+1.2 | \phantom{+}0.0$ & $+.01/+.01 \;|\; +.01/.00$ & $0.0/0.0 \;|\; 0.0/0.0$ \\
+    \rowcolor{resulttint}
+    \textbf{\texttt{E6-A}} Full ($92{:}41|174{:}64$)& Strict PhB & $\mathbf{92.7}/\phantom{0}0.0 \;|\; \mathbf{97.7}/\phantom{0}\mathbf{3.1}$ & $\mathbf{+80.5} | \mathbf{+81.3}$ & $+3.58/\mathbf{+3.58} \;|\; +2.76/\mathbf{+2.75}$ & $0.0/0.0 \;|\; \mathbf{3.1}/0.0$ \\
+    \textbf{\texttt{E6-A}} Elig.\ ($0{:}0\text{ NA}|5{:}4$) & Strict PhB & $\text{NA} \;|\; 100/100$ & $\text{NA} | +50.0$ & $\text{NA} \;|\; +2.39/\mathbf{+2.47}$ & $\text{NA} \;|\; \mathbf{100}/0.0$ \\
     \bottomrule
   \end{tabular}%
   }
-\end{table}
+\end{table*}
 
-\textbf{$99.6\%$ Sub-Window Localization vs.\ the Vocabulary-Prior Barrier (\texttt{E6-3/4}).} Counterfactual interventions on \texttt{E6-A} across all $266$ pairs (\cref{tab:e6_subwin} and \cref{fig:logit_curves}) establish two key findings:
-(1) \emph{Near-$100\%$ Sub-Window Localization:} Unlike native \texttt{LVR-7B} ($\delta M(1) \in [-0.09, -0.01]$) and \texttt{E6-B} ($\delta M(1) = +0.01$), interpolating \texttt{E6-A}'s latent tape across all $266$ pairs drives a strong monotonic shift toward the donor color: $\delta M(1) = \mathbf{+3.58}\ci{2.68}{4.50}$ on $K=2$ (odds ratio $35.9\times$; $\delta M(2) = +6.75$) and $\delta M(1) = \mathbf{+2.76}\ci{2.34}{3.20}$ on $K=4$ (odds ratio $15.8\times$; $\delta M(2) = +4.76$). Interpolating \textbf{only the 2 slots of the edited step $m$ (\texttt{Win-Matched})} yields $\delta M(1) = \mathbf{+3.58}$ on $K=2$ ($\mathbf{100.0\%}$ of the 4-slot shift) and $\mathbf{+2.75}$ on $K=4$ ($\mathbf{99.64\%}$ of the 8-slot shift), proving $<0.4\%$ cross-step leakage.
-(2) \emph{Proposition~\ref{prop:isolation} and the Narrow-SFT Prior Barrier:} On eligible pairs, both \texttt{Donor-All} and 2-slot \texttt{Win-Matched} achieve $\mathbf{100.00\%}$ free-generation flips (\texttt{Win-Unmatched} $= 0.00\%$), and across the full set, \texttt{Donor-All} flip rates ($3.12\%$ on $K=4$, $0.00\%$ on $K=2$) match direct accuracy on $\Vrel$ ($3.12\%$ and $0.00\%$; Supplementary Table~S9) sample-by-sample ($\tau_{\mathrm{lat}} \equiv \tau_{\mathrm{total}}$). While \texttt{E6-A} reaches $92.68\%$--$97.66\%$ on $\Vorig$, the $40$ dev training scenes contain only \texttt{red/green/blue} targets, whereas the $266$ counterfactual edits rotate targets into \emph{held-out colors unseen during fine-tuning} (\texttt{yellow} $176$, \texttt{brown} $90$). Four epochs of 3-color Phase-B LoRA adaptation depress the baseline logit prior of unseen colors below $M(0) < -4$ log-odds; per Proposition~\ref{prop:margin}, the $+2.75$ to $+3.58$ log-odds push from $H_{\mathrm{diff}}^{(m)}$ falls slightly short of the $-M(0) > 4$ prior gap under uncalibrated greedy decoding on most unseen-color pairs, underscoring the necessity of continuous margin probing $\delta M(\alpha)$ and vocabulary-prior regularization.
+\textbf{Counterfactual Dissection: Conditional Logit Shifts vs.\ the Unseen-Color Prior Barrier (\texttt{E6-3/4}).} Evaluating all models on the $266$ counterfactual pairs (\cref{tab:e6_subwin} and \cref{fig:logit_curves}, keeping single-stage \texttt{Vision-Masked} \texttt{C1} for Native/\texttt{E5} separated from Strict Phase B for \texttt{E6-B/A}) reveals both the capability and limitation of \texttt{E6-A}:
+(1) \emph{In-Domain Reliance and Matched-Window Logit Shifts:} On $\Vorig$ (\texttt{red/green} targets), \texttt{E6-A} achieves $92.68\%$ ($K=2$) and $97.66\%$ ($K=4$) edited-position accuracy, and zeroing slots drops chain accuracy by $\mathbf{80.49}$\textbf{pp} ($K=2$) and $\mathbf{81.25}$\textbf{pp} ($K=4$). Under fixed-prefix conditional logit probing across all $266$ pairs (\cref{fig:logit_curves}), interpolating \texttt{E6-A}'s full tape shifts target log-odds by $\delta M(1) = \mathbf{+3.58}\ci{2.68}{4.50}$ on $K=2$ ($\delta M(2) = +6.75$, slope $+3.65$) and $\mathbf{+2.76}\ci{2.34}{3.20}$ on $K=4$ ($\delta M(2) = +4.76$, slope $+2.55$), whereas \texttt{E6-B} remains flat ($+0.01$). Interpolating \textbf{only the 2 slots of the edited step (\texttt{Win-Matched})} yields $\delta M(1) = \mathbf{+3.58}\ci{2.69}{4.48}$ ($K=2$) and $\mathbf{+2.75}\ci{2.31}{3.21}$ ($K=4$), matching the full-tape target shift (because $g_\theta$ is nonlinear and unmatched-window logit shifts were not decomposed, $2.75/2.76$ reflects agreement of mean target shifts rather than an additive bound on cross-step leakage).
+(2) \emph{The Unseen-Color Barrier:} Despite $92.68\%$--$97.66\%$ accuracy on $\Vorig$ and $+2.75$ to $+3.58$ conditional shifts, \textbf{\texttt{E6-A}'s direct accuracy on $\Vrel$ drops to $0.00\%$ ($K=2$) and $3.12\%\ci{0.78}{6.25}$ ($K=4$; Supplementary Table~S9)}, matched sample-by-sample by \texttt{Donor-All} (Proposition~\ref{prop:isolation}). Because all $960$ training labels in the $40$ dev clusters are \texttt{red/green/blue} while all $266$ edits rotate targets to \emph{held-out} \texttt{yellow} ($176$) or \texttt{brown} ($90$), $4$ epochs of Phase-B adaptation depress baseline margins $M(0)$ of \texttt{yellow/brown} below $-4$ log-odds, preventing $+2.75$ to $+3.58$ shifts from crossing $M(0) + \delta M(1) > 0$. Thus, \texttt{E6-A}'s position-eligible subset is empty on $K=2$ (\texttt{NA}) and has only \textbf{$5$ records / $4$ clusters on $K=4$} ($4$ records / $3$ clusters chain-eligible); while \texttt{Win-Matched} flips $100.0\%$ ($5/5$) vs.\ $0.0\%$ (\texttt{Win-Unmatched}) on those $5$ records, full-set free flips remain $0.00\%$ ($K=2$) and $3.12\%$ ($K=4$), establishing \textbf{in-domain transmission through $H$ and conditional logit sensitivity}, but \textbf{not} broad out-of-vocabulary counterfactual flipping.

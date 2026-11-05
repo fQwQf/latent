@@ -1,0 +1,5 @@
+# Local rendering, TeX compilation and source-comparison caches.
+ccfa-workfiles/**/build/
+ccfa-workfiles/**/cache/
+__pycache__/
+*.py[cod]

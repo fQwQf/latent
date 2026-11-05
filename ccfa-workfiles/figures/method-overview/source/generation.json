@@ -1,0 +1,45 @@
+{
+  "renderer": "Native draw.io XML reconstruction; exports produced by drawio 31.5.2",
+  "source": "sec/3_theory.tex Proposition 2; sec/4_benchmark.tex Two-Phase Strict Isolation Interface; sec/5_experiments.tex E6-C and E6-A/B",
+  "destination": "figs/fig1_teaser_overview.{drawio,svg,pdf,png}; PDF width 6.875 inches",
+  "reference": "Previous diagram: /home/fqwqf/.codex/generated_images/01a1a72e-e5a8-7f83-9788-7a0b74889c6a/exec-241809cf-f218-4615-a064-d261d7c5e427.png; topology reference only",
+  "prompt": "Redesign the attached scientific paper figure in a decisively contemporary visual language. The attached image is the EDIT TARGET and authoritative reference for topology and labels, NOT for appearance. The user explicitly dislikes its dated 1990s textbook/PowerPoint styling. Preserve all scientific meaning but substantially replace the visual treatment.\n\nOUTPUT: very crisp white-background landscape scientific figure, aspect ratio 2:1, ideally 3000 pixels wide or higher. Compact layout suitable for a two-column paper at 6.875 inches wide. TWO aligned horizontal lanes, (a) above and (b) below, with a quiet fine separator. No hero title, no poster framing, no card-dashboard layout.\n\nNEW DESIGN: refined modern editorial scientific illustration. Clean modern sans-serif typography resembling Inter or Helvetica Neue, regular/medium weight, charcoal #243444, NO serif text. Very shallow 2.5D physical representations with rounded edges, thin separated translucent-looking sheets and delicate ambient contact shadows. Render objects with smooth matte ceramic / frosted acrylic finish, not thick extruded parallelogram bricks. No dark contour outlines on 3D objects. No bevel borders, chrome, sketch texture, heavy gradient fills, or vintage clip art. Keep shape faces largely light and neutral, with soft cyan/teal #218F89 for visual tokens and the valid tape route, muted coral #DC856E for prefill relay, slate-blue #6784A6 for latent-cache layers. Strong high-contrast dark labels. Text floats frontally above or beside geometry and never tilts with the perspective. Connectors are precise thin flat vector-like lines with small arrowheads, smooth bends, consistent line weight and explicit endpoints. More polished and spacious locally, yet use the whole compact canvas. Change the silhouette and materials, not merely colors.\n\nEXACT TOPOLOGY:\n(a) label \"(a) Single-pass: prefill relay\". Left a fine 4x4 visual-token tile grid labeled \"Visual tokens\", tiles as tiny rounded low-profile chips. It has two paths into two separate compact horizontal layer stacks in the middle: upper coral \"Prompt / marker KV\", lower blue-gray \"Latent KV\". Each stack is depicted as 3 very thin separated sheets, with subtle depth and no thick sidewalls. Both stacks send rightward arrows into the same modest decoder representation on the right labeled \"Answer decoder\". The upper route is coral and labelled \"Prefill relay\". A separate light gray direct route arcs orthogonally above the two caches from Visual tokens toward Answer decoder, crossed by a small coral × and labelled \"Decode-time mask\". Do NOT cross out the latent-cache path. The diagram summarizes information routes rather than execution/token order.\n\n(b) label \"(b) Two-phase: isolated readout\". Left \"Phase A\" as a small plain typographic group label, NO pill badge. \"Image + question\" flows into a small restrained operation glyph labelled \"Parallel emission\". This sends a rightward arrow into an H ribbon labelled \"H: 2 slots per step\". Exactly EIGHT tiny rounded low-profile chips arranged horizontally in FOUR visibly separated PAIRS. Under pairs place \"1\", \"2\", \"3\", \"4\", with a minimal short bracket for each pair. Use four restrained chip tints to distinguish steps (teal, coral, blue-gray, sage); these are categorical step tags, not measured colors. Below each pair place one small ROI target swatch and exactly ONE short dashed vertical upward arrow from the swatch to that pair. No arrows from ROI swatches into Parallel emission. One thin grouping bracket beneath the swatches and the label \"Step-wise supervision (train)\".\nAfter the H tape place a thin vertical dashed isolation boundary labelled \"Fresh cache\". H crosses it via exactly one rightward arrow to a light modern decoder representation labelled \"Text decoder\" in the group \"Phase B\". Add an independent \"Question\" input below that decoder with a clear arrow into it. The Text decoder sends a short rightward arrow to \"Answers\". Under the boundary place a SMALL pale stack crossed by ×, labelled \"No image / A-cache\". No visual tokens and no Phase-A cache transfer across that boundary. H is the sole visual-information conduit.\n\nLABEL INVENTORY: All labels listed above, exactly once each; group indices 1,2,3,4. Do not add numbers, results, text paragraphs, slogans, equations, or acronym expansions. Prioritize readable type at final paper size, equal optical sizes, clean whitespace lanes for arrows, aligned module centers, and scientific correctness. The result should feel modern, precise and light, not cartoonish, not an app screenshot, not glossy corporate clip art.",
+  "style": "Reference-faithful shallow rounded planes with thin sidewalls, soft vector contact shadows and sans-serif type. All text is pure black (#000000), including labels and numeric annotations. Geometry, spacing and silhouettes reconstructed from the accepted modern raster reference; no stock parallelograms.",
+  "editability": "All graphics are editable native draw.io stencil paths, live text, connectors and semantic groups. Shadows use translucent vector paths. PDF and SVG contain no raster images.",
+  "canonical_source": "figs/fig1_teaser_overview.drawio",
+  "raster_reference": "/home/fqwqf/.codex/generated_images/01a1a72e-e5a8-7f83-9788-7a0b74889c6a/exec-aea84382-7fcb-4f25-a1ba-836bb06b31ae.png",
+  "semantic_audit": {
+    "scope": "Figure and caption versus supplied manuscript and supplementary methods; no implementation or external citation audit.",
+    "supported": [
+      "Single-pass visual information reaches both prompt/marker and latent caches (sec/3_theory.tex, Proposition 2). Decode masking blocks only the depicted direct visual route.",
+      "Phase A performs no-grad H_raw rollout, then teacher-forced parallel replay to emit H_diff (sec/4_benchmark.tex, method_e6).",
+      "L=2K, and the four illustrated pairs show K=4; per-step ROI/color supervision is E6-A-specific.",
+      "Phase B receives Q and H_diff, has no original image tokens or reused Phase-A caches, and recomputes its caches.",
+      "Answer-loss gradients flow through H_diff without detach into Phase-A adaptation; they do not differentiate through the raw autoregressive rollout.",
+      "Caption ranges match E6-C and E6-A/B tables: eligible flips 96.88–100%, latent KV flips 0%; in-domain chain accuracy 72.67–83.33%; matched-window shifts 2.75–3.58; unseen-color flips 0–3.12%."
+    ],
+    "changes": [
+      "Compact double-lane composition restored to match the accepted raster reference",
+      "H_diff and no-detach transfer explicit; no-grad rollout is a short note, with full parallel-replay and gradient details in the caption",
+      "Lower lane illustrates E6-A step-wise ROI/color supervision; K=4 and schematic step colors clarified in caption",
+      "All four figures use black text; data marks and mechanism colors remain semantic"
+    ],
+    "manuscript_ambiguity": {
+      "source": "sec/3_theory.tex, Proposition 3 condition (ii); sec/4_benchmark.tex, Phase B",
+      "finding": "If M includes M_end after H_diff, KV_{Q,M}(Q) cannot generally denote independence from H_diff. M_end may attend to H_diff in the fresh sequence.",
+      "impact": "This affects the stated cache dependency, not the absence of direct-image and reused Phase-A-cache routes. The figure makes only the latter claim.",
+      "status": "Reported to user; theory prose and equations left unchanged."
+    }
+  },
+  "design_qa": {
+    "reference": "exec-aea84382-7fcb-4f25-a1ba-836bb06b31ae.png",
+    "canvas": [
+      1800,
+      920
+    ],
+    "text_color": "#000000",
+    "native_path_shape": "rounded skewed quadrilaterals using quadratic Bezier tangencies",
+    "shadows": "24 low-opacity native paths; no raster blur/filter",
+    "scientific_scope": "Matched to the paper and prior semantic audit; no experimental values altered"
+  }
+}
