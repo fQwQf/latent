@@ -284,7 +284,7 @@ Because $g_\theta$ is a general nonlinear function of $(\KV_{Q,M}, \KV_H)$, obse
 \label{app:e6_tables}
 
 \begin{table*}[t]
-  \caption{\textbf{Table S9 (\texttt{E6} Checkpoint Selection, Table E6-2b Strict Phase-B Per-Position Accuracy on 150 Frozen Clusters, and Table E6-3d Direct Input Counterfactual Baselines on 266 Recolored Pairs).} Note the protocol and population separation between Part B ($150$ clusters, all models under Strict Phase B) and Part C ($266$ counterfactual pairs, where Native \texttt{LVR-7B} and \texttt{E5} use single-stage \texttt{Vision-Masked} \texttt{C1} while \texttt{E6-B} and \texttt{E6-A} use Strict Phase B).}
+  \caption{\textbf{(\texttt{E6} Checkpoint Selection, Table E6-2b Strict Phase-B Per-Position Accuracy on 150 Frozen Clusters, and Table E6-3d Direct Input Counterfactual Baselines on 266 Recolored Pairs).} Note the protocol and population separation between Part B ($150$ clusters, all models under Strict Phase B) and Part C ($266$ counterfactual pairs, where Native \texttt{LVR-7B} and \texttt{E5} use single-stage \texttt{Vision-Masked} \texttt{C1} while \texttt{E6-B} and \texttt{E6-A} use Strict Phase B).}
   \label{tab:s9_e6_details}
   \centering
   \footnotesize
@@ -405,3 +405,157 @@ Because $g_\theta$ is a general nonlinear function of $(\KV_{Q,M}, \KV_H)$, obse
 The $50$ development scene clusters are partitioned into $40$ training clusters and $10$ validation clusters ($7$ instance-composited, $3$ polygon-recolored), with zero source-image overlap against the $150$ frozen evaluation clusters ($1,070$ evaluation source photos vs.\ $400$ dev source photos).
 In \texttt{E5}, LoRA adapters (\texttt{q\_proj, v\_proj}, rank $8$, $\alpha=16$, dropout $0.05$, learning rate $10^{-4}$, batch accumulation $4$) are trained for $2$ epochs ($160$ optimizer updates) with $L=2K$, aligning each 2-slot window via normalized MSE to the target ROI mean visual feature plus $0.1\times$ 8-color cross-entropy, while masking visual keys during text answer decoding with probability $0.6$ ($\mathrm{TBPTT}=1$).
 In \texttt{E6-A} and \texttt{E6-B}, both models initialize from the same native \texttt{LVR-7B} weights (seed \texttt{20261103}) and attach LoRA adapters to \texttt{q\_proj, k\_proj, v\_proj, o\_proj} (rank $16$, $\alpha=32$, dropout $0.05$, AdamW learning rate $2\times 10^{-4}$, gradient clipping $1.0$, batch accumulation $4$) for $4$ epochs ($1,280$ query presentations, $320$ updates). Checkpoints are selected strictly by lowest Phase-B validation answer cross-entropy on the $10$ dev validation clusters without accessing evaluation labels or intervention outcomes.
+
+\section{Complete \texttt{E7} Supplementary Tables (Tables S13 to S17)}
+\label{app:e7_tables}
+
+\begin{table*}[t]
+  \caption{\textbf{\texttt{E7-1a-P} \& \texttt{E7-1a-IV-A/B/AB}: Zero-Slot Logit-Prior Calibration on 266 Held-Out \texttt{Yellow/Brown} Pairs and In-Vocabulary Recoloring (\texttt{Red $\leftrightarrow$ Green $\leftrightarrow$ Blue}, $496$ Verified Records across $62$ Clusters) Under Free Generation.} Bracketed values are $95\%$ scene-cluster bootstrap intervals.}
+  \label{tab:s13_e7_1a}
+  \centering
+  \footnotesize
+  \setlength{\tabcolsep}{3.5pt}
+  \resizebox{\textwidth}{!}{%
+\begin{tabular}{l c c c c c c}
+    \toprule
+    \textbf{Part A: \texttt{E7-1a-P} Prior-Calibrated Unseen \texttt{Yellow/Brown}} & \textbf{Records / Clusters} & \textbf{Direct $=$ Donor-All New (\%)} & \textbf{Orig Correct $\to$ New (\%)} & \textbf{Edited Full-Chain Acc.\ (\%)} & \textbf{Valid Format Rate (\%)} & \textbf{Orig Chain Acc.\ Drop vs.\ Uncal.\ (pp)} \\
+    \midrule
+    $K=2$ Full Set          & $92 / 41$  & $23.78\ci{12.20}{36.59}$ & $18.90\ci{9.15}{29.88}$  & $21.34\ci{10.37}{33.54}$ & $97.56\ci{92.68}{100.0}$ & $-7.32\ci{-15.85}{-1.22}$ ($85.37{\to}78.05\%$) \\
+    $K=2$ Pos-Eligible      & $17 / 11$  & $100.0\ci{100.0}{100.0}$ & $100.0\ci{100.0}{100.0}$ & $86.36\ci{63.64}{100.0}$ & $100.0\ci{100.0}{100.0}$ & — \\
+    $K=2$ Chain-Eligible    & $14 / 9\phantom{0}$ & $100.0\ci{100.0}{100.0}$ & $100.0\ci{100.0}{100.0}$ & $100.0\ci{100.0}{100.0}$ & $100.0\ci{100.0}{100.0}$ & — \\
+    $K=4$ Full Set          & $174 / 64$ & $45.18\ci{34.89}{55.47}$ & $35.42\ci{25.39}{45.44}$ & $31.12\ci{21.48}{41.02}$ & $88.28\ci{80.47}{95.31}$ & $-34.38\ci{-46.88}{-21.88}$ ($89.84{\to}55.47\%$) \\
+    $K=4$ Pos-Eligible      & $57 / 32$  & $100.0\ci{100.0}{100.0}$ & $100.0\ci{100.0}{100.0}$ & $68.75\ci{53.13}{84.38}$ & $100.0\ci{100.0}{100.0}$ & — \\
+    $K=4$ Chain-Eligible    & $38 / 21$  & $100.0\ci{100.0}{100.0}$ & $100.0\ci{100.0}{100.0}$ & $100.0\ci{100.0}{100.0}$ & $100.0\ci{100.0}{100.0}$ & — \\
+    \bottomrule
+  \end{tabular}%
+  }
+  \vspace{4pt}
+
+  \resizebox{\textwidth}{!}{%
+\begin{tabular}{l c c c c c c}
+    \toprule
+    \textbf{Part B: \texttt{E7-1a-IV} In-Vocabulary Recoloring (\texttt{Red/Green/Blue})} & \textbf{Records / Clusters} & \textbf{Direct $=$ All New (\%)} & \textbf{Win-Matched New (\%)} & \textbf{Win-Unmatched New (\%)} & \textbf{Matched $-$ Unmatched (pp)} & \textbf{Direct Full-Chain Acc.\ / Orig$\to$New (\%)} \\
+    \midrule
+    \rowcolor{resulttint}
+    \textbf{\texttt{E6-A}} $K=2$ Full Set       & $176 / 39$ & $\mathbf{73.40}\ci{64.42}{82.05}$ & $\mathbf{73.40}\ci{63.46}{82.69}$ & $3.21\ci{0.00}{7.69}$ & $\mathbf{+70.19}\ci{59.62}{80.13}$ & Chain: $44.23\ci{39.74}{48.08}$ \\
+    \rowcolor{resulttint}
+    \textbf{\texttt{E6-A}} $K=2$ Pos-Eligible   & $121 / 36$ & $100.0\ci{100.0}{100.0}$ & $\mathbf{100.0}\ci{100.0}{100.0}$ & $0.00\ci{0.00}{0.00}$ & $\mathbf{+100.0}\ci{100.0}{100.0}$ & Chain: $63.89\ci{55.32}{72.23}$ \\
+    \rowcolor{resulttint}
+    \textbf{\texttt{E6-A}} $K=2$ Chain-Eligible & $67 / 32$  & $100.0\ci{100.0}{100.0}$ & $\mathbf{100.0}\ci{100.0}{100.0}$ & $0.00\ci{0.00}{0.00}$ & $\mathbf{+100.0}\ci{100.0}{100.0}$ & Chain: $100.0\ci{100.0}{100.0}$ \\
+    \rowcolor{resulttint}
+    \textbf{\texttt{E6-A}} $K=4$ Full Set       & $320 / 62$ & $\mathbf{58.53}\ci{49.60}{67.14}$ & $\mathbf{59.54}\ci{50.67}{68.28}$ & $1.48\ci{0.13}{3.23}$ & $\mathbf{+58.06}\ci{49.46}{66.67}$ & Chain: $35.22\ci{28.43}{42.00}$ \\
+    \rowcolor{resulttint}
+    \textbf{\texttt{E6-A}} $K=4$ Pos-Eligible   & $187 / 49$ & $100.0\ci{100.0}{100.0}$ & $\mathbf{99.20}\ci{97.89}{100.0}$ & $0.17\ci{0.00}{0.51}$ & $\mathbf{+99.03}\ci{97.72}{100.0}$ & Chain: $62.35\ci{52.75}{71.90}$ \\
+    \rowcolor{resulttint}
+    \textbf{\texttt{E6-A}} $K=4$ Chain-Eligible & $114 / 41$ & $100.0\ci{100.0}{100.0}$ & $\mathbf{98.78}\ci{96.95}{100.0}$ & $0.00\ci{0.00}{0.00}$ & $\mathbf{+98.78}\ci{96.95}{100.0}$ & Chain: $100.0\ci{100.0}{100.0}$ \\
+    \midrule
+    \texttt{E6-B} $K=2$ Full Set                & $176 / 39$ & $29.81\ci{22.76}{36.86}$ & $29.49\ci{22.44}{36.54}$ & $29.49\ci{22.42}{36.54}$ & $0.00\ci{0.00}{0.00}$ & Orig$\to$New: $0.00\%$ (Chain $13.14\%$) \\
+    \texttt{E6-B} $K=4$ Full Set                & $320 / 62$ & $33.74\ci{28.49}{38.44}$ & $34.81\ci{29.37}{40.05}$ & $33.56\ci{28.67}{38.40}$ & $+1.25\ci{-0.25}{2.89}$ & Orig$\to$New: $1.55\%$ (Chain $0.60\%$) \\
+    \midrule
+    \textbf{Paired $\texttt{E6-A} - \texttt{E6-B}$ (Full Set)} & $K{=}2 / K{=}4$ & $\mathbf{+43.59} / \mathbf{+24.80}$ pp & — & — & \multicolumn{2}{c}{\textbf{DID $(\text{Match}{-}\text{Unm})_{A-B}$:} $K{=}2$: $\mathbf{+70.19}\ci{59.62}{80.13}$; $K{=}4$: $\mathbf{+56.81}\ci{48.16}{65.66}$ pp} \\
+    \bottomrule
+  \end{tabular}%
+  }
+\end{table*}
+
+\begin{table*}[t]
+  \caption{\textbf{\texttt{E7-2} Tables E7-2a, E7-2b, E7-2c: Same-Scene 11-Arm Component Separation Across $K=1$, $K=2$, and $K=4$ on the 150 Frozen Evaluation Scene Clusters (Template 0, $13,200$ Outputs).} Top: per-position mean accuracy ($\%$) and paired difference vs.\ \texttt{NoLatent} (pp). Bottom: full-chain exact-match accuracy ($\%$). Native continuous slots cause severe negative transfer even on single-hop $K=1$ queries ($-16.00$ to $-21.67$pp).}
+  \label{tab:s14_e7_2}
+  \centering
+  \footnotesize
+  \setlength{\tabcolsep}{3.2pt}
+  \resizebox{\textwidth}{!}{%
+\begin{tabular}{l c c c c c c}
+    \toprule
+    \textbf{Strategy (11 Arms, Template 0)} & \textbf{$K=1$ Single-Hop (\% / $\Delta$ vs.\ NoLat)} & \textbf{$K=2$ Serial Pos (\% / $\Delta$)} & \textbf{$K=2$ Indep.\ Pos (\% / $\Delta$)} & \textbf{$K=4$ Serial Pos (\% / $\Delta$)} & \textbf{$K=4$ Indep.\ Pos (\% / $\Delta$)} & \textbf{Full-Chain ($K{=}2$ S/I $\;|\;$ $K{=}4$ S/I \%)} \\
+    \midrule
+    \texttt{NoLatent}      & $83.33\ci{80.5}{86.2} / \phantom{+}0.00$ & $85.67 / \phantom{+}0.00$ & $88.00 / \phantom{+}0.00$ & $72.33 / \phantom{+}0.00$ & $71.67 / \phantom{+}0.00$ & $76.00 / 80.00 \;\;|\;\; 36.00 / 33.33$ \\
+    \texttt{Marker-only}   & $83.50\ci{80.5}{86.3} / +0.17\ci{-0.5}{1.0}$ & $86.33 / +0.67$ & $88.33 / +0.33$ & $71.83 / {-0.50}$ & $71.33 / {-0.33}$ & $76.67 / 80.67 \;\;|\;\; 36.00 / 33.33$ \\
+    \texttt{Native} $L=2$  & $67.33\ci{63.0}{71.5} / \mathbf{-16.00}\ci{-20.0}{-12.2}$ & $78.00 / {-7.67}$ & $81.67 / {-6.33}$ & $62.83 / {-9.50}$ & $64.83 / {-6.83}$ & $64.67 / 71.33 \;\;|\;\; 18.67 / 20.67$ \\
+    \texttt{Native} $L=4$  & $63.33\ci{58.8}{67.7} / \mathbf{-20.00}\ci{-24.5}{-15.8}$ & $79.00 / {-6.67}$ & $79.67 / {-8.33}$ & $60.67 / {-11.67}$ & $62.50 / {-9.17}$ & $66.67 / 68.67 \;\;|\;\; 19.33 / 20.67$ \\
+    \texttt{Native} $L=8$  & $61.67\ci{57.3}{66.0} / \mathbf{-21.67}\ci{-25.8}{-17.5}$ & $75.00 / {-10.67}$ & $74.33 / {-13.67}$ & $62.17 / {-10.17}$ & $64.33 / {-7.33}$ & $62.67 / 62.67 \;\;|\;\; 21.33 / 20.00$ \\
+    \rowcolor{resulttint}
+    \texttt{Zero-Slot} $L=2$ & $\mathbf{83.67}\ci{80.8}{86.5} / +0.33\ci{-0.3}{1.0}$ & $86.33 / +0.67$ & $88.33 / +0.33$ & $71.50 / {-0.83}$ & $71.17 / {-0.50}$ & $76.67 / 80.67 \;\;|\;\; 35.33 / 34.00$ \\
+    \rowcolor{resulttint}
+    \texttt{Zero-Slot} $L=4$ & $\mathbf{83.67}\ci{80.8}{86.5} / +0.33\ci{-0.3}{1.0}$ & $85.00 / {-0.67}$ & $88.00 / \phantom{+}0.00$ & $72.83 / +0.50$ & $71.67 / \phantom{+}0.00$ & $75.33 / 80.67 \;\;|\;\; 37.33 / 36.00$ \\
+    \rowcolor{resulttint}
+    \texttt{Zero-Slot} $L=8$ & $\mathbf{83.67}\ci{80.8}{86.3} / +0.33\ci{0.0}{0.8}$ & $85.00 / {-0.67}$ & $87.67 / {-0.33}$ & $73.33 / +1.00$ & $72.00 / +0.33$ & $75.33 / 80.00 \;\;|\;\; 37.33 / 37.33$ \\
+    \texttt{Zero-Marker} $L=2$ & $67.50\ci{63.2}{71.7} / {-15.83}\ci{-19.8}{-12.0}$ & $79.33 / {-6.33}$ & $81.67 / {-6.33}$ & $62.50 / {-9.83}$ & $65.83 / {-5.83}$ & $66.67 / 70.67 \;\;|\;\; 17.33 / 22.00$ \\
+    \texttt{Zero-Marker} $L=4$ & $62.83\ci{58.3}{67.3} / {-20.50}\ci{-25.0}{-16.3}$ & $78.67 / {-7.00}$ & $79.67 / {-8.33}$ & $61.50 / {-10.83}$ & $64.00 / {-7.67}$ & $66.00 / 69.33 \;\;|\;\; 19.33 / 22.67$ \\
+    \texttt{Zero-Marker} $L=8$ & $61.83\ci{57.5}{66.2} / {-21.50}\ci{-25.7}{-17.3}$ & $74.67 / {-11.00}$ & $75.00 / {-13.00}$ & $64.00 / {-8.33}$ & $65.67 / {-6.00}$ & $62.00 / 62.67 \;\;|\;\; 22.67 / 21.33$ \\
+    \bottomrule
+  \end{tabular}%
+  }
+\end{table*}
+
+\begin{table*}[t]
+  \caption{\textbf{\texttt{E7-3a} Tables E7-3a-K2, E7-3a-K4, E7-3a-Max: Complete $K\times K$ Cross-Step Conditional Log-Odds Response Matrix $\delta M_{k \leftarrow r}(\alpha=1)$ on \texttt{E6-A} Across 266 Counterfactual Pairs.} Rows denote probed output step $k$; columns denote interpolated 2-slot input window $r$. Off-diagonal spillover is concentrated at the immediate causal successor $k = r+1$.}
+  \label{tab:s15_e7_3a}
+  \centering
+  \footnotesize
+  \resizebox{\textwidth}{!}{%
+\begin{tabular}{l c c c c c c}
+    \toprule
+    \textbf{Output Step $k$ $\backslash$ Input Window $r$} & \textbf{$K=2$: $r=1$} & \textbf{$K=2$: $r=2$} & \textbf{$K=4$: $r=1$} & \textbf{$K=4$: $r=2$} & \textbf{$K=4$: $r=3$} & \textbf{$K=4$: $r=4$} \\
+    \midrule
+    Step $k=1$ & $\mathbf{+3.440}\ci{2.554}{4.384}$ & $+0.024\ci{-0.005}{0.061}$ & $\mathbf{+1.229}\ci{0.785}{1.733}$ & $+0.034\ci{0.013}{0.060}$ & $+0.018\ci{0.004}{0.035}$ & $+0.008\ci{-0.013}{0.034}$ \\
+    Step $k=2$ & $+0.376\ci{0.209}{0.560}$ & $\mathbf{+0.211}\ci{0.102}{0.339}$ & $+0.209\ci{0.122}{0.310}$ & $\mathbf{+0.402}\ci{0.225}{0.604}$ & $+0.002\ci{-0.007}{0.012}$ & $-0.011\ci{-0.030}{0.013}$ \\
+    Step $k=3$ & — & — & $-0.023\ci{-0.078}{0.029}$ & $+0.154\ci{0.050}{0.288}$ & $\mathbf{+0.695}\ci{0.426}{1.013}$ & $+0.018\ci{-0.002}{0.040}$ \\
+    Step $k=4$ & — & — & $-0.028\ci{-0.078}{0.013}$ & $-0.019\ci{-0.087}{0.042}$ & $+0.179\ci{0.075}{0.295}$ & $\mathbf{+0.753}\ci{0.432}{1.120}$ \\
+    \midrule
+    \multicolumn{7}{l}{\textbf{Per-Item Max Off-Diagonal $|\delta M_{k \neq r}(1)|$ (Table E7-3a-Max):} $K=2$ ($92/41$): Cluster Mean $\mathbf{0.486}\ci{0.337}{0.646}$ (Max $2.252$); $K=4$ ($174/64$): Cluster Mean $\mathbf{0.697}\ci{0.562}{0.847}$ (Max $3.625$).} \\
+    \bottomrule
+  \end{tabular}%
+  }
+\end{table*}
+
+\begin{table*}[t]
+  \caption{\textbf{\texttt{E7-3b} \& \texttt{E7-1b} Tables E7-F0, E7-3b-ROI, E7-F1, E7-F2, E7-F3: Phase-A Supervision Ablations (\texttt{w/o Color-CE}, \texttt{w/o ROI-MSE}, \texttt{Answer-CE Only}) and \texttt{8-Color + KL} Training on 150 Frozen E1 Clusters and 266 Unseen \texttt{Yellow/Brown} Counterfactuals.}}
+  \label{tab:s16_e7_ablation_kl}
+  \centering
+  \footnotesize
+  \setlength{\tabcolsep}{3.2pt}
+  \resizebox{\textwidth}{!}{%
+\begin{tabular}{l c c c c c c c}
+    \toprule
+    \textbf{Model Variant (Strict Phase B)} & \textbf{Sel.\ Ep.\ / Dev CE} & \textbf{E1 $K{=}2$ S / I Chain (\%)} & \textbf{E1 $K{=}4$ S / I Chain (\%)} & \textbf{CF Orig Chain ($K{=}2|4$ \%)} & \textbf{CF Direct New ($K{=}2|4$ \%)} & \textbf{CF Orig$\to$New ($K{=}2|4$ \%)} & \textbf{CF Match$-$Unm / Zero Drop ($K{=}2|4$ pp)} \\
+    \midrule
+    \texttt{E7-3b} \texttt{w/o Color-CE} & Ep 2 / $0.1638$ & $73.67 / 77.33$ & $38.33 / 41.00$ & — & $0.00 \;|\; 0.00$ & $0.00 \;|\; 0.00$ & $0.00|+0.78\ci{0.0}{2.3}$ $\;/$ — \\
+    \texttt{E7-3b} \texttt{w/o ROI-MSE}  & Ep 1 / $0.1034$ & $80.00 / 81.67$ & $55.33 / 57.33$ & $90.24 \;|\; 65.63$ & $3.66 \;|\; 2.73$ & $3.66 \;|\; 2.34$ & $+4.88|+2.73$ $\;/\; +71.95|+60.94$ \\
+    \texttt{E7-3b} \texttt{Answer-CE Only} & Ep 1 / $0.2368$ & $17.33 / 16.00$ & $\phantom{0}5.00 / \phantom{0}5.67$ & $17.07 \;|\; \phantom{0}6.25$ & $0.00 \;|\; 0.00$ & $0.00 \;|\; 0.00$ & $0.00|0.00$ $\;/\; {-3.66}|0.00$ \\
+    \rowcolor{resulttint}
+    \textbf{\texttt{E7-1b} \texttt{8-Color + KL}} & Ep 3 / $0.0556$ & $50.67 / 53.33$ & $20.67 / 18.00$ & $50.00 \;|\; 25.00$ & $\mathbf{85.37} \;|\; \mathbf{82.29}$ & $\mathbf{57.32} \;|\; \mathbf{47.79}$ & $\mathbf{+59.76}|\mathbf{+47.05}$ $\;/\; +50.00|+25.00$ \\
+    \bottomrule
+  \end{tabular}%
+  }
+\end{table*}
+
+\begin{table*}[t]
+  \caption{\textbf{\texttt{E7-4} Tables E7-F4, E7-F5, E7-F6: Implicit Pointer-Chaining Benchmark Across 150 Frozen Scene Clusters ($600$ Queries: $K \in \{2, 4\} \times 2$ Templates).} Comparison of Parallel vs.\ Recurrent Phase-A under Strict Image-Free Phase B and Same-Weight Direct Vision (\texttt{NoLatent}).}
+  \label{tab:s17_e7_4}
+  \centering
+  \footnotesize
+  \setlength{\tabcolsep}{3.5pt}
+  \resizebox{\textwidth}{!}{%
+\begin{tabular}{l c c c c c c}
+    \toprule
+    \textbf{Weights / Readout Interface} & \textbf{$K=2$ Full Chain (\%)} & \textbf{$K=2$ Final Step $O_2$ (\%)} & \textbf{$K=2$ Pos.\ Mean (\%)} & \textbf{$K=4$ Full Chain (\%)} & \textbf{$K=4$ Final Step $O_4$ (\%)} & \textbf{$K=4$ Pos.\ Mean (\%)} \\
+    \midrule
+    Native \texttt{LVR-7B} / Direct Vision & $10.33\ci{6.00}{15.00}$ & $23.00\ci{17.00}{29.33}$ & $48.00\ci{44.17}{51.67}$ & $\phantom{0}1.33\ci{0.00}{3.33}$ & $21.67\ci{15.67}{28.00}$ & $39.08\ci{35.83}{42.33}$ \\
+    Frozen \texttt{E6-A} / Direct Vision   & $33.67\ci{26.67}{40.67}$ & $42.00\ci{34.67}{49.00}$ & $62.33\ci{57.83}{66.83}$ & $18.00\ci{12.33}{23.67}$ & $46.67\ci{39.67}{53.67}$ & $60.92\ci{56.92}{65.00}$ \\
+    Frozen \texttt{E6-A} / Strict Phase B  & $16.67\ci{11.33}{22.67}$ & $21.67\ci{15.67}{28.00}$ & $54.50\ci{51.00}{58.17}$ & $16.00\ci{10.67}{21.67}$ & $43.00\ci{36.00}{50.33}$ & $59.08\ci{55.08}{63.00}$ \\
+    \midrule
+    Matched Parallel / Direct Vision       & $85.00\ci{79.00}{90.34}$ & $86.67\ci{81.00}{91.67}$ & $88.50\ci{83.67}{92.83}$ & $59.33\ci{51.67}{66.67}$ & $69.67\ci{62.33}{76.34}$ & $79.33\ci{74.75}{83.75}$ \\
+    Matched Parallel / Strict Phase B      & $70.67\ci{63.33}{77.67}$ & $73.33\ci{66.00}{80.00}$ & $77.00\ci{71.17}{82.83}$ & $31.33\ci{24.33}{38.67}$ & $41.33\ci{33.67}{49.00}$ & $60.58\ci{55.58}{65.67}$ \\
+    Matched Recurrent / Direct Vision      & $\mathbf{87.33}\ci{82.00}{92.33}$ & $\mathbf{88.33}\ci{83.00}{93.00}$ & $\mathbf{90.50}\ci{86.17}{94.17}$ & $\mathbf{63.00}\ci{55.33}{70.33}$ & $\mathbf{74.33}\ci{67.33}{81.00}$ & $\mathbf{83.00}\ci{78.83}{86.83}$ \\
+    \rowcolor{resulttint}
+    \textbf{Matched Recurrent / Strict Phase B} & $\mathbf{80.67}\ci{74.33}{86.67}$ & $\mathbf{82.00}\ci{75.67}{87.67}$ & $\mathbf{84.83}\ci{79.83}{89.67}$ & $\mathbf{41.33}\ci{33.67}{49.00}$ & $\mathbf{52.00}\ci{44.33}{59.67}$ & $\mathbf{67.50}\ci{62.50}{72.58}$ \\
+    \midrule
+    \textbf{Paired Strict: Recurrent $-$ Parallel (pp)} & $\mathbf{+10.00}\ci{3.00}{17.00}$ & $\mathbf{+8.67}\ci{1.67}{15.33}$ & $\mathbf{+7.83}\ci{1.50}{14.33}$ & $\mathbf{+10.00}\ci{1.33}{18.67}$ & $\mathbf{+10.67}\ci{1.66}{19.67}$ & $\mathbf{+6.92}\ci{1.08}{12.67}$ \\
+    \textbf{Paired Parallel: Strict $-$ Direct (pp)}    & $-14.33\ci{-22.33}{-6.99}$ & $-13.33\ci{-21.00}{-6.00}$ & $-11.50\ci{-18.33}{-4.67}$ & $-28.00\ci{-37.33}{-19.00}$ & $-28.33\ci{-38.00}{-18.33}$ & $-18.75\ci{-25.00}{-12.75}$ \\
+    \textbf{Paired Recurrent: Strict $-$ Direct (pp)}   & $-6.67\ci{-12.67}{-1.33}$ & $-6.33\ci{-12.33}{-0.67}$ & $-5.67\ci{-10.67}{-0.83}$ & $-21.67\ci{-31.00}{-12.67}$ & $-22.33\ci{-32.00}{-13.00}$ & $-15.50\ci{-21.00}{-10.08}$ \\
+    \textbf{Exploratory DID $(\text{Rec}{-}\text{Par})_{\text{Strict}-\text{Direct}}$} & $+7.67\ci{-0.33}{15.67}$ & $+7.00\ci{-0.67}{15.00}$ & $+5.83\ci{-1.17}{13.00}$ & $+6.33\ci{-3.00}{15.67}$ & $+6.00\ci{-4.33}{17.33}$ & $+3.25\ci{-3.25}{9.59}$ \\
+    \bottomrule
+  \end{tabular}%
+  }
+\end{table*}
